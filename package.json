@@ -8,7 +8,7 @@
     "@testing-library/user-event": "^12.1.10",
     "@types/jest": "^26.0.15",
     "@types/node": "^12.0.0",
-    "@types/react": "^16.9.53",
+    "@types/react": "^17.0.0",
     "@types/react-dom": "^16.9.8",
     "provviz": "^1.0.0",
     "react": "^16.14.0",
