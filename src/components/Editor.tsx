@@ -25,19 +25,22 @@ const Editor: React.FC<EditorProps> = ({ width, height, document }) => {
     <MonacoEditor
       width={width}
       height={height}
+      options={{
+        fontSize: 16,
+      }}
       language="json"
       value={value}
       onChange={handleChange}
-      // editorWillMount={({ languages }) => {
-      //   languages.json.jsonDefaults.setDiagnosticsOptions({
-      //     validate: true,
-      //     schemas: [{
-      //       uri: 'http://provenance.ecs.soton.ac.uk/prov-json/schema#',
-      //       fileMatch: ['*'],
-      //       schema: PROVJSONSchema,
-      //     }],
-      //   });
-      // }}
+      editorWillMount={({ languages }) => {
+        languages.json.jsonDefaults.setDiagnosticsOptions({
+          validate: true,
+          schemas: [{
+            uri: 'https://www.w3.org/Submission/2013/SUBM-prov-json-20130424/schema',
+            fileMatch: ['*'],
+            schema: PROVJSONSchema,
+          }],
+        });
+      }}
     />
   );
 };

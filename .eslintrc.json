@@ -57,5 +57,10 @@
                 "extensions": [".js", ".jsx", ".ts", ".tsx"]
             }
         }
-    }
+    },
+    "ignorePatterns": [
+        "scripts/**",
+        "config/**",
+        "wepback.config.js"
+    ]
 }
