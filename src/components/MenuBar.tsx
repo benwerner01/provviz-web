@@ -79,8 +79,10 @@ const MenuBar: React.FC<MenuBarProps> = ({ setDocument }) => {
         <ClickAwayListener onClickAway={() => setOpenMenuIsOpen(false)}>
           <Menu className={classes.menu}>
             <SubMenu className={classes.subMenu} title="Examples">
-              {examples.map(({ name, document }) => (
+              {examples.map(({ name, document }, i) => (
                 <MenuItem
+                  // eslint-disable-next-line react/no-array-index-key
+                  key={i}
                   className={classes.menuItem}
                   onClick={() => setDocument(document)}
                 >

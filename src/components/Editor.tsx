@@ -3,18 +3,18 @@ import MonacoEditor from 'react-monaco-editor';
 import PROVJSONSchema from '../lib/PROVJSONSchema';
 
 type EditorProps = {
-  document: object;
+  document?: object;
   width: number;
   height: number;
 }
 
 const Editor: React.FC<EditorProps> = ({ width, height, document }) => {
   const [value, setValue] = useState<string>(
-    JSON.stringify(document, null, '\t'),
+    document ? JSON.stringify(document, null, '\t') : '',
   );
 
   useEffect(() => {
-    setValue(JSON.stringify(document, null, '\t'));
+    setValue(document ? JSON.stringify(document, null, '\t') : '');
   }, [document]);
 
   const handleChange = (newValue: string) => {

@@ -1,25 +1,64 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Visualiser } from 'provviz';
+import { makeStyles } from '@material-ui/core/styles';
 import Box from '@material-ui/core/Box';
+import DragHandleIcon from '@material-ui/icons/DragHandle';
 import MenuBar, { MENU_BAR_HEIGHT } from './components/MenuBar';
 import Editor from './components/Editor';
 
-type Dimensions = {
+const DRAGGABLE_WIDTH = 12;
+
+type Dimension = {
   width: number;
   height: number;
 }
 
+const useStyles = makeStyles((theme) => ({
+  contentWrapper: {
+    position: 'relative',
+    display: 'flex',
+    height: `calc(100% - ${MENU_BAR_HEIGHT}px)`,
+    overflow: 'hidden',
+  },
+  draggable: {
+    display: 'flex',
+    alignItems: 'center',
+    borderColor: theme.palette.grey[300],
+    borderStyle: 'solid',
+    borderLeftWidth: 1,
+    borderRightWidth: 1,
+    borderTopWidth: 0,
+    borderBottomWidth: 0,
+    height: '100%',
+    width: DRAGGABLE_WIDTH,
+    '&:hover': {
+      cursor: 'col-resize',
+    },
+    '& svg': {
+      position: 'relative',
+      transform: 'rotate(90deg)',
+      left: -1 * (DRAGGABLE_WIDTH / 2),
+    },
+  },
+}));
+
 function App() {
-  const [document, setDocument] = useState<object | undefined>();
+  const classes = useStyles();
+  const contentWrapperRef = useRef<HTMLDivElement>(null);
+
+  const [PROVdocument, setPROVDocument] = useState<object | undefined>();
+  const [draggingOffset, setDraggingOffset] = useState<boolean>(false);
+  const [offset, setOffset] = useState<number | undefined>();
   const [
-    visualiserDimensions,
-    setVisualiserDimensions] = useState<Dimensions | undefined>();
+    contentWrapperDimension,
+    setContentWrapperDimension] = useState<Dimension | undefined>();
 
   const calculateDimensions = () => {
-    setVisualiserDimensions({
-      width: window.innerWidth / 2,
-      height: window.innerHeight - MENU_BAR_HEIGHT,
-    });
+    if (contentWrapperRef.current) {
+      const { width, height } = contentWrapperRef.current.getBoundingClientRect();
+      setContentWrapperDimension({ width, height });
+      if (!offset) setOffset(width / 2);
+    }
   };
 
   useEffect(() => {
@@ -30,27 +69,58 @@ function App() {
     };
   }, []);
 
+  const handleMouseUp = () => {
+    if (draggingOffset) setDraggingOffset(false);
+  };
+
+  const handlePointerMove = ({ clientX }: PointerEvent) => {
+    if (contentWrapperDimension && draggingOffset) {
+      setOffset(contentWrapperDimension.width - clientX);
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener('pointerup', handleMouseUp);
+    window.addEventListener('pointermove', handlePointerMove);
+    return () => {
+      window.removeEventListener('pointerup', handleMouseUp);
+      window.removeEventListener('pointermove', handlePointerMove);
+    };
+  });
+
+  const handleDraggableMouseDown = () => {
+    setDraggingOffset(true);
+  };
+
   return (
-    <div className="App">
-      <MenuBar setDocument={setDocument} />
-      <Box display="flex">
-        {document && visualiserDimensions && (
+    <>
+      <MenuBar setDocument={setPROVDocument} />
+      <div ref={contentWrapperRef} className={classes.contentWrapper}>
+        {contentWrapperDimension && offset && (
           <>
             <Editor
-              document={document}
-              width={visualiserDimensions.width}
-              height={visualiserDimensions.height}
+              document={PROVdocument}
+              width={contentWrapperDimension.width - offset}
+              height={contentWrapperDimension.height}
             />
-            <Visualiser
-              document={document}
-              wasmFolderURL={`${process.env.PUBLIC_URL}wasm`}
-              width={visualiserDimensions.width}
-              height={visualiserDimensions.height}
-            />
+            <Box
+              onMouseDown={handleDraggableMouseDown}
+              className={classes.draggable}
+            >
+              <DragHandleIcon />
+            </Box>
+            {PROVdocument && (
+              <Visualiser
+                document={PROVdocument}
+                wasmFolderURL={`${process.env.PUBLIC_URL}wasm`}
+                width={offset}
+                height={contentWrapperDimension.height}
+              />
+            )}
           </>
         )}
-      </Box>
-    </div>
+      </div>
+    </>
   );
 }
 
