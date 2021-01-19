@@ -52,9 +52,10 @@ const useStyles = makeStyles((theme) => ({
 
 type MenuBarProps = {
   setDocument: (document: object) => void;
+  openFileUploadDialog: () => void;
 }
 
-const MenuBar: React.FC<MenuBarProps> = ({ setDocument }) => {
+const MenuBar: React.FC<MenuBarProps> = ({ setDocument, openFileUploadDialog }) => {
   const classes = useStyles();
   const openButton = useRef<HTMLButtonElement>(null);
 
@@ -90,7 +91,10 @@ const MenuBar: React.FC<MenuBarProps> = ({ setDocument }) => {
                 </MenuItem>
               ))}
             </SubMenu>
-            <MenuItem className={classes.menuItem}>
+            <MenuItem
+              className={classes.menuItem}
+              onClick={() => openFileUploadDialog()}
+            >
               Upload
             </MenuItem>
           </Menu>

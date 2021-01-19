@@ -5,6 +5,7 @@ import Box from '@material-ui/core/Box';
 import DragHandleIcon from '@material-ui/icons/DragHandle';
 import MenuBar, { MENU_BAR_HEIGHT } from './components/MenuBar';
 import Editor from './components/Editor';
+import FileUploadDialog from './components/FileUploadDialog';
 
 const DRAGGABLE_WIDTH = 12;
 
@@ -47,6 +48,9 @@ function App() {
   const contentWrapperRef = useRef<HTMLDivElement>(null);
 
   const [PROVdocument, setPROVDocument] = useState<object | undefined>();
+
+  const [fileUploadDialogOpen, setFileUploadDialogOpen] = useState<boolean>(false);
+
   const [draggingOffset, setDraggingOffset] = useState<boolean>(false);
   const [offset, setOffset] = useState<number | undefined>();
   const [
@@ -98,7 +102,15 @@ function App() {
 
   return (
     <>
-      <MenuBar setDocument={setPROVDocument} />
+      <FileUploadDialog
+        open={fileUploadDialogOpen}
+        onClose={() => setFileUploadDialogOpen(!fileUploadDialogOpen)}
+        addDocument={(newDocument) => setPROVDocument(newDocument)}
+      />
+      <MenuBar
+        setDocument={setPROVDocument}
+        openFileUploadDialog={() => setFileUploadDialogOpen(true)}
+      />
       <div ref={contentWrapperRef} className={classes.contentWrapper}>
         {contentWrapperDimension && offset && (
           <>
