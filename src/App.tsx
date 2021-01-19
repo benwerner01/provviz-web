@@ -92,6 +92,10 @@ function App() {
     setDraggingOffset(true);
   };
 
+  const handleChange = (updatedDocument: object) => {
+    setPROVDocument(updatedDocument);
+  };
+
   return (
     <>
       <MenuBar setDocument={setPROVDocument} />
@@ -112,6 +116,7 @@ function App() {
             {PROVdocument && (
               <Visualiser
                 document={PROVdocument}
+                onChange={handleChange}
                 wasmFolderURL={`${process.env.PUBLIC_URL}wasm`}
                 width={offset}
                 height={contentWrapperDimension.height}

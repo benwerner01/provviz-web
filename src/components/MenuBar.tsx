@@ -90,7 +90,7 @@ const MenuBar: React.FC<MenuBarProps> = ({ setDocument }) => {
                 </MenuItem>
               ))}
             </SubMenu>
-            <MenuItem>
+            <MenuItem className={classes.menuItem}>
               Upload
             </MenuItem>
           </Menu>
