@@ -17,6 +17,7 @@ const useStyles = makeStyles((theme) => ({
   dialogContent: {
     display: 'flex',
     position: 'relative',
+    marginBottom: theme.spacing(2),
   },
   dialogTitle: {
     paddingBottom: 0,
