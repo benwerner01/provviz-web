@@ -6,16 +6,16 @@ import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
 import { Box, Typography } from '@material-ui/core';
 import { translateToPROVJSON } from '../lib/openProvenanceAPI';
 import { PROVFileType } from '../lib/types';
 
 const useStyles = makeStyles((theme) => ({
   dialogPaper: {
-    minWidth: 500,
+    maxWidth: 700,
   },
   dialogContent: {
-    display: 'flex',
     position: 'relative',
     marginBottom: theme.spacing(2),
   },
@@ -147,11 +147,6 @@ const FileUploadDialog: React.FC<FileUploadDialogProps> = ({
 
   const dragging = draggingCounter > 0;
 
-  console.log('File: ', file);
-  console.log('Type: ', fileType);
-  console.log('Content: ', fileContent);
-  console.log('Serialized: ', serializedFile);
-
   return (
     <Dialog
       open={open}
@@ -160,61 +155,73 @@ const FileUploadDialog: React.FC<FileUploadDialogProps> = ({
     >
       <DialogTitle className={classes.dialogTitle}>Upload a PROV Document</DialogTitle>
       <DialogContent className={classes.dialogContent}>
-        <Box
-          display="flex"
-          flexDirection="column"
-          alignItems="center"
-          justifyContent="center"
-          className={[
-            classes.dragAndDropBox,
-            file ? classes.dragAndDropBoxFile : [],
-            dragging ? classes.dragAndDropBoxDragging : [],
-          ].flat().join(' ')}
-          onDragOver={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-          }}
-          onDragEnter={handleFileDragEnter}
-          onDragLeave={handleFileDragLeave}
-          onDrop={handleFileDrop}
-        >
-          {file ? (
-            <>
-              <DescriptionIcon />
-              {file.name}
-            </>
-          ) : (
-            <>
-              <PublishIcon />
-              {dragging ? (
-                <>
-                  <Typography><strong>Drop File</strong></Typography>
-                </>
-              ) : (
-                <>
-                  <Typography><strong>Drag and Drop file</strong></Typography>
-                  <Typography>or</Typography>
-                  <Button
-                    color="primary"
-                    variant="contained"
-                    component="label"
-                  >
-                    Browse
-                    <input
-                      type="file"
-                      onChange={({ target }) => {
-                        reset();
-                        if (target.files && target.files.length > 0) setFile(target.files[0]);
-                      }}
-                      hidden
-                    />
-                  </Button>
-                </>
-              )}
-            </>
-          )}
-        </Box>
-        {file && (
+        <DialogContentText>
+          Valid document formats include
+          {' '}
+          {['PROV-N', 'Turtle', 'PROV-XML', 'TriG', 'PROV-JSON']
+            .map((format, i, all) => (
+              <React.Fragment key={format}>
+                {i === 0 ? '' : i === all.length - 1 ? ' and ' : ', '}
+                <strong>{format}</strong>
+              </React.Fragment>
+            ))}
+        </DialogContentText>
+        <Box display="flex">
+          <Box
+            display="flex"
+            flexDirection="column"
+            alignItems="center"
+            justifyContent="center"
+            className={[
+              classes.dragAndDropBox,
+              file ? classes.dragAndDropBoxFile : [],
+              dragging ? classes.dragAndDropBoxDragging : [],
+            ].flat().join(' ')}
+            onDragOver={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+            }}
+            onDragEnter={handleFileDragEnter}
+            onDragLeave={handleFileDragLeave}
+            onDrop={handleFileDrop}
+          >
+            {file ? (
+              <>
+                <DescriptionIcon />
+                {file.name}
+              </>
+            ) : (
+              <>
+                <PublishIcon />
+                {dragging ? (
+                  <>
+                    <Typography><strong>Drop File</strong></Typography>
+                  </>
+                ) : (
+                  <>
+                    <Typography><strong>Drag and Drop file</strong></Typography>
+                    <Typography>or</Typography>
+                    <Button
+                      color="primary"
+                      variant="contained"
+                      component="label"
+                    >
+                      Browse
+                      <input
+                        type="file"
+                        onChange={({ target }) => {
+                          reset();
+                          if (target.files && target.files.length > 0) setFile(target.files[0]);
+                        }}
+                        hidden
+                      />
+                    </Button>
+                  </>
+                )}
+              </>
+            )}
+          </Box>
+          {file && (
           <Box
             pl={1}
             flexGrow={1}
@@ -241,7 +248,9 @@ const FileUploadDialog: React.FC<FileUploadDialogProps> = ({
               </Button>
             </Box>
           </Box>
-        )}
+          )}
+        </Box>
+
       </DialogContent>
     </Dialog>
   );
