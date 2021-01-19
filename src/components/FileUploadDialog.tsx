@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { ChangeEvent, useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import PublishIcon from '@material-ui/icons/Publish';
 import DescriptionIcon from '@material-ui/icons/Description';
@@ -7,9 +7,11 @@ import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
-import { Box, Typography } from '@material-ui/core';
+import Box from '@material-ui/core/Box';
+import TextField from '@material-ui/core/TextField';
+import Typography from '@material-ui/core/Typography';
 import { translateToPROVJSON } from '../lib/openProvenanceAPI';
-import { PROVFileType } from '../lib/types';
+import { PROVDocument, PROVFileType } from '../lib/types';
 
 const useStyles = makeStyles((theme) => ({
   dialogPaper: {
@@ -48,7 +50,7 @@ const useStyles = makeStyles((theme) => ({
 type FileUploadDialogProps = {
   open: boolean;
   onClose: () => void;
-  addDocument: (document: object) => void;
+  addDocument: (document: PROVDocument) => void;
 }
 
 const parsePROVFileType = (fileName: string): PROVFileType | undefined => {
@@ -68,6 +70,7 @@ const FileUploadDialog: React.FC<FileUploadDialogProps> = ({
   const classes = useStyles();
 
   const [file, setFile] = useState<File | undefined>();
+  const [fileName, setFileName] = useState<string | undefined>();
   const [fileContent, setFileContent] = useState<string | undefined>();
   const [fileType, setFileType] = useState<PROVFileType | undefined>();
   const [serializedFile, setSerializedFile] = useState<object | undefined>();
@@ -117,6 +120,7 @@ const FileUploadDialog: React.FC<FileUploadDialogProps> = ({
 
   const reset = () => {
     setFile(undefined);
+    setFileName(undefined);
     setFileContent(undefined);
     setFileType(undefined);
     setSerializedFile(undefined);
@@ -129,7 +133,14 @@ const FileUploadDialog: React.FC<FileUploadDialogProps> = ({
     setDraggingCounter(0);
     const { files } = e.dataTransfer;
 
-    if (files.length > 0) setFile(files[0]);
+    if (files.length > 0) {
+      setFile(files[0]);
+      setFileName(files[0].name.split('.')[0]);
+    }
+  };
+
+  const handleFileNameChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setFileName(e.target.value);
   };
 
   const handleCancel = () => {
@@ -138,8 +149,12 @@ const FileUploadDialog: React.FC<FileUploadDialogProps> = ({
   };
 
   const handleDone = () => {
-    if (serializedFile) {
-      addDocument(serializedFile);
+    if (fileName && fileType && serializedFile) {
+      addDocument({
+        name: fileName,
+        type: fileType,
+        serialization: serializedFile,
+      });
       onClose();
       reset();
     }
@@ -211,7 +226,10 @@ const FileUploadDialog: React.FC<FileUploadDialogProps> = ({
                         type="file"
                         onChange={({ target }) => {
                           reset();
-                          if (target.files && target.files.length > 0) setFile(target.files[0]);
+                          if (target.files && target.files.length > 0) {
+                            setFileName(target.files[0].name.split('.')[0]);
+                            setFile(target.files[0]);
+                          }
                         }}
                         hidden
                       />
@@ -229,8 +247,13 @@ const FileUploadDialog: React.FC<FileUploadDialogProps> = ({
             flexDirection="column"
             justifyContent="space-between"
           >
-            {file.name}
-            {fileType}
+            <Box style={{ width: '100%' }}>
+              <TextField label="Name" type="text" style={{ width: '100%' }} value={fileName} onChange={handleFileNameChange} />
+              <Typography>
+                {'Document Type: '}
+                <strong>{fileType}</strong>
+              </Typography>
+            </Box>
             <Box className={classes.buttonWrapper} display="flex" justifyContent="flex-end">
               <Button
                 variant="outlined"
@@ -239,7 +262,11 @@ const FileUploadDialog: React.FC<FileUploadDialogProps> = ({
                 Cancel
               </Button>
               <Button
-                disabled={serializedFile === undefined}
+                disabled={(
+                  fileName === undefined
+                  || fileType === undefined
+                  || serializedFile === undefined
+                )}
                 variant="contained"
                 color="primary"
                 onClick={handleDone}

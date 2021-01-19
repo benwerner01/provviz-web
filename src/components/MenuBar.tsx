@@ -7,6 +7,7 @@ import Menu, { MenuItem, SubMenu } from 'rc-menu';
 import 'rc-menu/assets/index.css';
 import { ClickAwayListener } from '@material-ui/core';
 import examples from '../lib/examples';
+import { PROVDocument } from '../lib/types';
 
 export const MENU_BAR_HEIGHT = 36;
 
@@ -51,11 +52,11 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 type MenuBarProps = {
-  setDocument: (document: object) => void;
+  addDocument: (document: PROVDocument) => void;
   openFileUploadDialog: () => void;
 }
 
-const MenuBar: React.FC<MenuBarProps> = ({ setDocument, openFileUploadDialog }) => {
+const MenuBar: React.FC<MenuBarProps> = ({ addDocument, openFileUploadDialog }) => {
   const classes = useStyles();
   const openButton = useRef<HTMLButtonElement>(null);
 
@@ -80,14 +81,14 @@ const MenuBar: React.FC<MenuBarProps> = ({ setDocument, openFileUploadDialog }) 
         <ClickAwayListener onClickAway={() => setOpenMenuIsOpen(false)}>
           <Menu className={classes.menu}>
             <SubMenu className={classes.subMenu} title="Examples">
-              {examples.map(({ name, document }, i) => (
+              {examples.map((document, i) => (
                 <MenuItem
                   // eslint-disable-next-line react/no-array-index-key
                   key={i}
                   className={classes.menuItem}
-                  onClick={() => setDocument(document)}
+                  onClick={() => addDocument(document)}
                 >
-                  {name}
+                  {document.name}
                 </MenuItem>
               ))}
             </SubMenu>

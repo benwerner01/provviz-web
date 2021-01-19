@@ -1,12 +1,10 @@
-type ExampleDocument = {
-  name: string;
-  document: object;
-}
+import { PROVDocument } from './types';
 
-const examples: ExampleDocument[] = [
+const examples: PROVDocument[] = [
   {
     name: 'Survey Results',
-    document: {
+    type: 'PROV-JSON',
+    serialization: {
       prefix: { ex: 'http://s11.no/survey4/' },
       wasAttributedTo: {
         '_:id1': { 'prov:agent': 'ex:bob', 'prov:entity': 'ex:graph' }, '_:id2': { 'prov:agent': 'ex:alice', 'prov:entity': 'ex:dataset' }, '_:id13': { 'prov:agent': 'ex:patient7', 'prov:entity': 'ex:response2' }, '_:id14': { 'prov:agent': 'ex:patient4', 'prov:entity': 'ex:response1' },
@@ -26,7 +24,8 @@ const examples: ExampleDocument[] = [
   },
   {
     name: 'PROVBook',
-    document: {
+    type: 'PROV-JSON',
+    serialization: {
       prefix: {
         dct: 'http://purl.org/dc/terms/',
         hendler: 'http://www.cs.rpi.edu/~hendler/',

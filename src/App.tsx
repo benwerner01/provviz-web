@@ -6,6 +6,7 @@ import DragHandleIcon from '@material-ui/icons/DragHandle';
 import MenuBar, { MENU_BAR_HEIGHT } from './components/MenuBar';
 import Editor from './components/Editor';
 import FileUploadDialog from './components/FileUploadDialog';
+import { PROVDocument } from './lib/types';
 
 const DRAGGABLE_WIDTH = 12;
 
@@ -47,7 +48,8 @@ function App() {
   const classes = useStyles();
   const contentWrapperRef = useRef<HTMLDivElement>(null);
 
-  const [PROVdocument, setPROVDocument] = useState<object | undefined>();
+  const [openDocuments, setOpenDocuments] = useState<PROVDocument[]>([]);
+  const [currentDocumentIndex, setCurrentDocumentIndex] = useState<number>(-1);
 
   const [fileUploadDialogOpen, setFileUploadDialogOpen] = useState<boolean>(false);
 
@@ -96,26 +98,39 @@ function App() {
     setDraggingOffset(true);
   };
 
-  const handleChange = (updatedDocument: object) => {
-    setPROVDocument(updatedDocument);
+  const handleDocumentChange = (index: number) => (updatedSerialization: object) => {
+    setOpenDocuments((documents) => [
+      ...documents.slice(0, index),
+      { ...documents[index], serialization: updatedSerialization },
+      ...documents.slice(index + 1, documents.length),
+    ]);
   };
+
+  const handleNewDocument = (newDocument: PROVDocument) => {
+    setOpenDocuments((documents) => [...documents, newDocument]);
+    setCurrentDocumentIndex(openDocuments.length);
+  };
+
+  const currentDocument = currentDocumentIndex < 0
+    ? undefined
+    : openDocuments[currentDocumentIndex];
 
   return (
     <>
       <FileUploadDialog
         open={fileUploadDialogOpen}
         onClose={() => setFileUploadDialogOpen(!fileUploadDialogOpen)}
-        addDocument={(newDocument) => setPROVDocument(newDocument)}
+        addDocument={handleNewDocument}
       />
       <MenuBar
-        setDocument={setPROVDocument}
+        addDocument={handleNewDocument}
         openFileUploadDialog={() => setFileUploadDialogOpen(true)}
       />
       <div ref={contentWrapperRef} className={classes.contentWrapper}>
         {contentWrapperDimension && offset && (
           <>
             <Editor
-              document={PROVdocument}
+              document={currentDocument?.serialization}
               width={contentWrapperDimension.width - offset}
               height={contentWrapperDimension.height}
             />
@@ -125,10 +140,10 @@ function App() {
             >
               <DragHandleIcon />
             </Box>
-            {PROVdocument && (
+            {currentDocument && (
               <Visualiser
-                document={PROVdocument}
-                onChange={handleChange}
+                document={currentDocument.serialization}
+                onChange={handleDocumentChange(currentDocumentIndex)}
                 wasmFolderURL={`${process.env.PUBLIC_URL}wasm`}
                 width={offset}
                 height={contentWrapperDimension.height}
