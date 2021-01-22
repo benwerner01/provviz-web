@@ -153,7 +153,7 @@ const FileUploadDialog: React.FC<FileUploadDialogProps> = ({
       addDocument({
         name: fileName,
         type: fileType,
-        serialization: serializedFile,
+        serialized: serializedFile,
       });
       onClose();
       reset();

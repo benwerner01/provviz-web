@@ -47,6 +47,7 @@
     "jest-circus": "26.6.0",
     "jest-resolve": "26.6.0",
     "jest-watch-typeahead": "0.6.1",
+    "lodash.debounce": "^4.0.8",
     "mini-css-extract-plugin": "0.11.3",
     "monaco-editor-webpack-plugin": "^2.1.0",
     "optimize-css-assets-webpack-plugin": "5.0.4",
@@ -103,6 +104,7 @@
     ]
   },
   "devDependencies": {
+    "@types/lodash.debounce": "^4.0.6",
     "@typescript-eslint/eslint-plugin": "^4.11.1",
     "@typescript-eslint/parser": "^4.14.0",
     "eslint": "^7.18.0",

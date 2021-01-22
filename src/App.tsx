@@ -98,10 +98,10 @@ function App() {
     setDraggingOffset(true);
   };
 
-  const handleDocumentChange = (index: number) => (updatedSerialization: object) => {
+  const handleDocumentChange = (index: number) => (serialized: object) => {
     setOpenDocuments((documents) => [
       ...documents.slice(0, index),
-      { ...documents[index], serialization: updatedSerialization },
+      { ...documents[index], serialized },
       ...documents.slice(index + 1, documents.length),
     ]);
   };
@@ -127,10 +127,11 @@ function App() {
         openFileUploadDialog={() => setFileUploadDialogOpen(true)}
       />
       <div ref={contentWrapperRef} className={classes.contentWrapper}>
-        {contentWrapperDimension && offset && (
+        {contentWrapperDimension && offset && currentDocument && (
           <>
             <Editor
-              document={currentDocument?.serialization}
+              document={currentDocument}
+              onChange={handleDocumentChange(currentDocumentIndex)}
               width={contentWrapperDimension.width - offset}
               height={contentWrapperDimension.height}
             />
@@ -140,15 +141,14 @@ function App() {
             >
               <DragHandleIcon />
             </Box>
-            {currentDocument && (
-              <Visualiser
-                document={currentDocument.serialization}
-                onChange={handleDocumentChange(currentDocumentIndex)}
-                wasmFolderURL={`${process.env.PUBLIC_URL}wasm`}
-                width={offset}
-                height={contentWrapperDimension.height}
-              />
-            )}
+            <Visualiser
+              key={currentDocument.name}
+              document={currentDocument.serialized}
+              onChange={handleDocumentChange(currentDocumentIndex)}
+              wasmFolderURL={`${process.env.PUBLIC_URL}wasm`}
+              width={offset}
+              height={contentWrapperDimension.height}
+            />
           </>
         )}
       </div>

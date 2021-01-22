@@ -4,7 +4,7 @@ const examples: PROVDocument[] = [
   {
     name: 'Survey Results',
     type: 'PROV-JSON',
-    serialization: {
+    serialized: {
       prefix: { ex: 'http://s11.no/survey4/' },
       wasAttributedTo: {
         '_:id1': { 'prov:agent': 'ex:bob', 'prov:entity': 'ex:graph' }, '_:id2': { 'prov:agent': 'ex:alice', 'prov:entity': 'ex:dataset' }, '_:id13': { 'prov:agent': 'ex:patient7', 'prov:entity': 'ex:response2' }, '_:id14': { 'prov:agent': 'ex:patient4', 'prov:entity': 'ex:response1' },
@@ -25,7 +25,7 @@ const examples: PROVDocument[] = [
   {
     name: 'PROVBook',
     type: 'PROV-JSON',
-    serialization: {
+    serialized: {
       prefix: {
         dct: 'http://purl.org/dc/terms/',
         hendler: 'http://www.cs.rpi.edu/~hendler/',
