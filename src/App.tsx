@@ -143,6 +143,7 @@ function App() {
             </Box>
             <Visualiser
               key={currentDocument.name}
+              documentName={currentDocument.name}
               document={currentDocument.serialized}
               onChange={handleDocumentChange(currentDocumentIndex)}
               wasmFolderURL={`${process.env.PUBLIC_URL}wasm`}
