@@ -152,6 +152,7 @@ const FileUploadDialog: React.FC<FileUploadDialogProps> = ({
     if (fileName && fileType && serializedFile) {
       addDocument({
         name: fileName,
+        updatedAt: new Date(),
         type: fileType,
         serialized: serializedFile,
       });

@@ -1,6 +1,6 @@
 import { PROVDocument } from './types';
 
-const examples: PROVDocument[] = [
+const examples: Omit<PROVDocument, 'updatedAt'>[] = [
   {
     name: 'Survey Results',
     type: 'PROV-JSON',
