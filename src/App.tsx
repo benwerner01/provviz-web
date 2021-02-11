@@ -1,11 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Visualiser } from 'provviz';
+import Visualiser, { MIN_WIDTH } from 'provviz';
 import { makeStyles } from '@material-ui/core/styles';
 import Box from '@material-ui/core/Box';
 import DragHandleIcon from '@material-ui/icons/DragHandle';
 import { useHistory, useParams } from 'react-router-dom';
 import slugify from 'slugify';
-import MenuBar, { MENU_BAR_HEIGHT } from './components/MenuBar';
+import MenuBar, { Layout, MENU_BAR_HEIGHT } from './components/MenuBar';
 import Editor from './components/Editor';
 import FileUploadDialog from './components/FileUploadDialog';
 import { PROVDocument } from './lib/types';
@@ -60,6 +60,7 @@ const App = () => {
 
   const [fileUploadDialogOpen, setFileUploadDialogOpen] = useState<boolean>(false);
 
+  const [layout, setLayout] = useState<Layout>({ code: true, visualisation: true });
   const [draggingOffset, setDraggingOffset] = useState<boolean>(false);
   const [offset, setOffset] = useState<number | undefined>();
   const [
@@ -144,7 +145,10 @@ const App = () => {
 
   const handlePointerMove = ({ clientX }: PointerEvent) => {
     if (contentWrapperDimension && draggingOffset) {
-      setOffset(contentWrapperDimension.width - clientX);
+      const updatedOffset = contentWrapperDimension.width - clientX;
+      if (
+        updatedOffset > MIN_WIDTH
+        && contentWrapperDimension.width - updatedOffset > MIN_WIDTH) setOffset(updatedOffset);
     }
   };
 
@@ -181,6 +185,8 @@ const App = () => {
         addDocument={openDocument}
       />
       <MenuBar
+        layout={layout}
+        setLayout={setLayout}
         openDocument={openDocument}
         openFileUploadDialog={() => setFileUploadDialogOpen(true)}
       />
@@ -188,30 +194,38 @@ const App = () => {
         {!currentDocument && <NoCurrentDocument addDocument={openDocument} />}
         {contentWrapperDimension && offset && currentDocument && (
         <>
+          {layout.code && (
           <Editor
             openDocuments={openDocuments}
             setOpenDocuments={setOpenDocuments}
             currentDocumentIndex={currentDocumentIndex}
             onChange={handleDocumentChange(currentDocumentIndex)}
             setCurrentDocumentIndex={setCurrentDocumentIndex}
-            width={contentWrapperDimension.width - offset}
+            width={layout.visualisation
+              ? contentWrapperDimension.width - offset
+              : contentWrapperDimension.width}
             height={contentWrapperDimension.height}
           />
+          )}
+          {layout.code && layout.visualisation && (
           <Box
             onMouseDown={handleDraggableMouseDown}
             className={classes.draggable}
           >
             <DragHandleIcon />
           </Box>
+          )}
+          {layout.visualisation && (
           <Visualiser
             key={currentDocument.name}
             documentName={currentDocument.name}
             document={currentDocument.serialized}
             onChange={handleDocumentChange(currentDocumentIndex)}
             wasmFolderURL={`${process.env.PUBLIC_URL}wasm`}
-            width={offset}
+            width={layout.code ? offset : contentWrapperDimension.width}
             height={contentWrapperDimension.height}
           />
+          )}
         </>
         )}
       </div>
