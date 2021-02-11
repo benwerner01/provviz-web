@@ -4,8 +4,8 @@ import { makeStyles } from '@material-ui/core/styles';
 import Popper from '@material-ui/core/Popper';
 import Button from '@material-ui/core/Button';
 import Menu, { MenuItem, SubMenu } from 'rc-menu';
-import 'rc-menu/assets/index.css';
 import { ClickAwayListener } from '@material-ui/core';
+import './MenuBar.css';
 import examples from '../lib/examples';
 import { PROVDocument } from '../lib/types';
 import LocalDocumentsContext from './context/LocalDocumentsContext';
@@ -64,12 +64,17 @@ const MenuBar: React.FC<MenuBarProps> = ({ openDocument, openFileUploadDialog })
 
   const [menuIsOpen, setMenuIsOpen] = useState<boolean>(false);
 
+  const handleDocumentClick = (document: PROVDocument) => {
+    setMenuIsOpen(false);
+    openDocument(document);
+  };
+
   return (
     <Box display="flex" alignItems="center" className={classes.wrapper}>
       <h1 className={classes.logo}>ProvViz</h1>
       <Button
         className={classes.button}
-        onClick={() => setMenuIsOpen(!menuIsOpen)}
+        onClick={() => setMenuIsOpen((prev) => !prev)}
         ref={openButton}
       >
         Open
@@ -84,12 +89,11 @@ const MenuBar: React.FC<MenuBarProps> = ({ openDocument, openFileUploadDialog })
           <Menu className={classes.menu}>
             {localDocuments.length > 0 && (
               <SubMenu className={classes.subMenu} title="Recent">
-                {localDocuments.map((document, i) => (
+                {localDocuments.map((document) => (
                   <MenuItem
-                    // eslint-disable-next-line react/no-array-index-key
-                    key={i}
+                    key={document.name}
                     className={classes.menuItem}
-                    onClick={() => openDocument(document)}
+                    onClick={() => handleDocumentClick(document)}
                   >
                     {document.name}
                   </MenuItem>
@@ -97,12 +101,13 @@ const MenuBar: React.FC<MenuBarProps> = ({ openDocument, openFileUploadDialog })
               </SubMenu>
             )}
             <SubMenu className={classes.subMenu} title="Examples">
-              {examples.map((document, i) => (
+              {examples.map((document) => (
                 <MenuItem
-                  // eslint-disable-next-line react/no-array-index-key
-                  key={i}
+                  key={document.name}
                   className={classes.menuItem}
-                  onClick={() => openDocument({ ...document, name: `My-${document.name}`, updatedAt: new Date() })}
+                  onClick={() => handleDocumentClick({
+                    ...document, name: `My ${document.name}`, updatedAt: new Date(),
+                  })}
                 >
                   {document.name}
                 </MenuItem>

@@ -78,7 +78,19 @@ const App = () => {
     ? undefined
     : openDocuments[currentDocumentIndex];
 
+  const setLocalDocument = (document: PROVDocument) => {
+    const i = localDocuments.findIndex(({ name }) => name === document.name);
+    setLocalDocuments(i === -1
+      ? [...localDocuments, document]
+      : [
+        ...localDocuments.slice(0, i),
+        document,
+        ...localDocuments.slice(i + 1, localDocuments.length),
+      ]);
+  };
+
   const openDocument = (newDocument: PROVDocument) => {
+    setLocalDocument(newDocument);
     const existingIndex = openDocuments.findIndex(({ name }) => name === newDocument.name);
     if (existingIndex !== -1) {
       setCurrentDocumentIndex(existingIndex);
@@ -149,17 +161,6 @@ const App = () => {
     setDraggingOffset(true);
   };
 
-  const setLocalDocument = (document: PROVDocument) => {
-    const i = localDocuments.findIndex(({ name }) => name === document.name);
-    setLocalDocuments(i === -1
-      ? [document]
-      : [
-        ...localDocuments.slice(0, i),
-        document,
-        ...localDocuments.slice(i + 1, localDocuments.length),
-      ]);
-  };
-
   const handleDocumentChange = (index: number) => (serialized: object) => {
     const updatedDocument = { ...openDocuments[index], serialized };
     setOpenDocuments((documents) => [
@@ -189,6 +190,7 @@ const App = () => {
         <>
           <Editor
             openDocuments={openDocuments}
+            setOpenDocuments={setOpenDocuments}
             currentDocumentIndex={currentDocumentIndex}
             onChange={handleDocumentChange(currentDocumentIndex)}
             setCurrentDocumentIndex={setCurrentDocumentIndex}
