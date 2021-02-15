@@ -9467,9 +9467,9 @@ prop-types@^15.5.10, prop-types@^15.5.9, prop-types@^15.6.1, prop-types@^15.6.2,
     react-is "^16.8.1"
 
 provviz@^1.0.0:
-  version "1.15.2"
-  resolved "https://registry.yarnpkg.com/provviz/-/provviz-1.15.2.tgz#3dbb5e7cf341523776ee07ef4db45f737d3937dc"
-  integrity sha512-nWtIpi8Ml5xH/VUHgBeiYEobIMZLFeGcNb1PtDDJI2NDgXThuQ25ZfqRNHNjZ60zl8RsAgMDOty5RCyMhPNWXQ==
+  version "1.15.3"
+  resolved "https://registry.yarnpkg.com/provviz/-/provviz-1.15.3.tgz#b4c3e4bfd3255e7cabf013f98be5768535ea153e"
+  integrity sha512-zJntzf/5+mH5raQn0vdNjmC/mIg1MzCfEhvW3DmdFmAQuy4OdpAT4OQ1YuxJgPJTRQbQOEVqJRYdqWW5EZpW0A==
   dependencies:
     "@hpcc-js/wasm" "0.3.13"
     "@material-ui/core" "^4.11.0"
