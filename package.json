@@ -56,7 +56,7 @@
     "@types/file-saver": "^2.0.1",
     "@types/lodash.debounce": "^4.0.6",
     "@types/react-router-dom": "^5.1.7",
-    "@typescript-eslint/eslint-plugin": "^4.11.1",
+    "@typescript-eslint/eslint-plugin": "^4.15.1",
     "@typescript-eslint/parser": "^4.14.0",
     "eslint": "^7.18.0",
     "eslint-config-airbnb": "^18.2.1",
