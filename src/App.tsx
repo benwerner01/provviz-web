@@ -11,6 +11,7 @@ import FileUploadDialog from './components/FileUploadDialog';
 import { PROVDocument } from './lib/types';
 import LocalDocumentsContext, { getLocalStorageDocuments, setLocalStorageDocuments } from './components/context/LocalDocumentsContext';
 import NoCurrentDocument from './components/NoCurrentDocument';
+import DocumentExportDialog from './components/DocumentExportDialog';
 
 const DRAGGABLE_WIDTH = 12;
 
@@ -59,6 +60,7 @@ const App = () => {
   const [currentDocumentIndex, setCurrentDocumentIndex] = useState<number>(-1);
 
   const [fileUploadDialogOpen, setFileUploadDialogOpen] = useState<boolean>(false);
+  const [documentExportDialogOpen, setDocumentExportDialogOpen] = useState<boolean>(false);
 
   const [layout, setLayout] = useState<Layout>({ code: true, visualisation: true });
   const [draggingOffset, setDraggingOffset] = useState<boolean>(false);
@@ -181,14 +183,23 @@ const App = () => {
     >
       <FileUploadDialog
         open={fileUploadDialogOpen}
-        onClose={() => setFileUploadDialogOpen(!fileUploadDialogOpen)}
+        onClose={() => setFileUploadDialogOpen(false)}
         addDocument={openDocument}
       />
+      {currentDocument && (
+      <DocumentExportDialog
+        open={documentExportDialogOpen}
+        document={currentDocument}
+        onClose={() => setDocumentExportDialogOpen(false)}
+      />
+      )}
       <MenuBar
         layout={layout}
+        openDocuments={openDocuments}
         setLayout={setLayout}
         openDocument={openDocument}
         openFileUploadDialog={() => setFileUploadDialogOpen(true)}
+        exportDocument={() => setDocumentExportDialogOpen(true)}
       />
       <div ref={contentWrapperRef} className={classes.contentWrapper}>
         {!currentDocument && <NoCurrentDocument addDocument={openDocument} />}

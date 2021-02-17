@@ -6,6 +6,7 @@ import ButtonGroup from '@material-ui/core/ButtonGroup';
 import Button from '@material-ui/core/Button';
 import CodeIcon from '@material-ui/icons/Code';
 import VisibilityIcon from '@material-ui/icons/Visibility';
+import Fade from '@material-ui/core/Fade';
 import Menu, { MenuItem, SubMenu } from 'rc-menu';
 import { ClickAwayListener } from '@material-ui/core';
 import './MenuBar.css';
@@ -77,14 +78,18 @@ const useStyles = makeStyles((theme) => ({
 
 type MenuBarProps = {
   layout: Layout
+  openDocuments: PROVDocument[];
   setLayout: React.Dispatch<React.SetStateAction<Layout>>;
+  exportDocument: () => void;
   openDocument: (document: PROVDocument) => void;
   openFileUploadDialog: () => void;
 }
 
 const MenuBar: React.FC<MenuBarProps> = ({
   layout,
+  openDocuments,
   setLayout,
+  exportDocument,
   openDocument,
   openFileUploadDialog,
 }) => {
@@ -110,6 +115,14 @@ const MenuBar: React.FC<MenuBarProps> = ({
         >
           Open
         </Button>
+        <Fade in={openDocuments.length > 0}>
+          <Button
+            className={classes.button}
+            onClick={exportDocument}
+          >
+            Export
+          </Button>
+        </Fade>
         <Popper
           open={menuIsOpen}
           className={classes.menuPopper}
