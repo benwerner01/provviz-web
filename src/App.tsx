@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import Visualiser, { MIN_WIDTH } from 'provviz';
+import Visualiser, { MIN_WIDTH, VisualisationSettings } from 'provviz';
 import { makeStyles } from '@material-ui/core/styles';
 import Box from '@material-ui/core/Box';
 import DragHandleIcon from '@material-ui/icons/DragHandle';
@@ -168,10 +168,22 @@ const App = () => {
   };
 
   const handleDocumentChange = (index: number) => (serialized: object) => {
-    const updatedDocument = { ...openDocuments[index], serialized };
+    const updatedDocument: PROVDocument = { ...openDocuments[index], serialized };
     setOpenDocuments((documents) => [
       ...documents.slice(0, index),
-      { ...documents[index], serialized },
+      updatedDocument,
+      ...documents.slice(index + 1, documents.length),
+    ]);
+    setLocalDocument(updatedDocument);
+  };
+
+  const handleDocumentVisualisationSettingsChange = (index: number) => (
+    visualisationSettings: VisualisationSettings,
+  ) => {
+    const updatedDocument: PROVDocument = { ...openDocuments[index], visualisationSettings };
+    setOpenDocuments((documents) => [
+      ...documents.slice(0, index),
+      updatedDocument,
       ...documents.slice(index + 1, documents.length),
     ]);
     setLocalDocument(updatedDocument);
@@ -232,6 +244,8 @@ const App = () => {
             documentName={currentDocument.name}
             document={currentDocument.serialized}
             onChange={handleDocumentChange(currentDocumentIndex)}
+            initialSettings={currentDocument.visualisationSettings}
+            onSettingsChange={handleDocumentVisualisationSettingsChange(currentDocumentIndex)}
             wasmFolderURL={`${process.env.PUBLIC_URL}wasm`}
             width={layout.code ? offset : contentWrapperDimension.width}
             height={contentWrapperDimension.height}

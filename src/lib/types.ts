@@ -1,3 +1,5 @@
+import { VisualisationSettings } from 'provviz';
+
 export type PROVFileType = 'PROV-N' | 'Turtle' | 'PROV-XML' | 'TriG' | 'PROV-JSON'
 
 export type PROVDocument = {
@@ -5,4 +7,5 @@ export type PROVDocument = {
   updatedAt: Date;
   type: PROVFileType;
   serialized: object;
+  visualisationSettings?: VisualisationSettings;
 }
