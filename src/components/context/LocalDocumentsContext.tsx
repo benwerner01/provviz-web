@@ -1,12 +1,24 @@
 import React from 'react';
 import { PROVDocument } from '../../lib/types';
 
+type LocalPROVDocument = Omit<PROVDocument, 'updatedAt'> & { updatedAt: string }
+
+const tbdIsLocalPROVDocument = (document: any): document is LocalPROVDocument => (
+  document.name !== undefined
+  && typeof document.name === 'string'
+  && document.updatedAt !== undefined
+  && typeof document.updatedAt === 'string'
+  && document.fileContent !== undefined
+  && typeof document.fileContent === 'string'
+);
+
 export const getLocalStorageDocuments = () => {
   try {
     const stringifiedLocalDocuments = localStorage.getItem('documents');
     return stringifiedLocalDocuments
       ? JSON.parse(stringifiedLocalDocuments)
-        .map((d: Omit<PROVDocument, 'updatedAt'> & { updatedAt: string }) => ({ ...d, updatedAt: new Date(d.updatedAt) }))
+        .filter(tbdIsLocalPROVDocument)
+        .map((d: LocalPROVDocument) => ({ ...d, updatedAt: new Date(d.updatedAt) }))
       : [];
   } catch {
     return [];
