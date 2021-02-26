@@ -191,7 +191,11 @@ const App = () => {
 
   const handleVisualiserChange = (index: number) => (serialized: object) => {
     const { type } = openDocuments[index];
-
+    setOpenDocuments((documents) => [
+      ...documents.slice(0, index),
+      { ...openDocuments[index], serialized },
+      ...documents.slice(index + 1, documents.length),
+    ]);
     translateSerializedToFile(serialized, type).then((fileContent) => {
       const updatedDocument: PROVDocument = {
         ...openDocuments[index],
