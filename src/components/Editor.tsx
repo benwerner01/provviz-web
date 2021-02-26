@@ -115,9 +115,13 @@ const Editor: React.FC<EditorProps> = ({
   const [loading, setLoading] = useState<boolean>(false);
   const [savingError, setSavingError] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<React.ReactNode | string | undefined>();
+  const [lastSavedFileContent, setLastSavedFileContent] = useState<string>('');
 
   useEffect(() => {
-    setValue(currentDocument.fileContent);
+    if (lastSavedFileContent !== currentDocument.fileContent) {
+      setLastSavedFileContent(currentDocument.fileContent);
+      setValue(currentDocument.fileContent);
+    }
   }, [currentDocument]);
 
   useLayoutEffect(() => {
@@ -132,6 +136,7 @@ const Editor: React.FC<EditorProps> = ({
     const serialized = await translateToPROVJSON(updatedValue, currentDocument.type);
 
     if (serialized) {
+      setLastSavedFileContent(updatedValue);
       onChange({ ...currentDocument, serialized, fileContent: updatedValue });
       setSavingError(false);
     } else setSavingError(true);

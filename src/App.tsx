@@ -12,6 +12,7 @@ import { PROVDocument } from './lib/types';
 import LocalDocumentsContext, { getLocalStorageDocuments, setLocalStorageDocuments } from './components/context/LocalDocumentsContext';
 import NoCurrentDocument from './components/NoCurrentDocument';
 import DocumentExportDialog from './components/DocumentExportDialog';
+import { translateSerializedToFile } from './lib/openProvenanceAPI';
 
 const DRAGGABLE_WIDTH = 12;
 
@@ -188,6 +189,24 @@ const App = () => {
     setLocalDocument(updatedDocument);
   };
 
+  const handleVisualiserChange = (index: number) => (serialized: object) => {
+    const { type } = openDocuments[index];
+
+    translateSerializedToFile(serialized, type).then((fileContent) => {
+      const updatedDocument: PROVDocument = {
+        ...openDocuments[index],
+        serialized,
+        fileContent: fileContent || openDocuments[index].fileContent,
+      };
+      setOpenDocuments((documents) => [
+        ...documents.slice(0, index),
+        updatedDocument,
+        ...documents.slice(index + 1, documents.length),
+      ]);
+      setLocalDocument(updatedDocument);
+    });
+  };
+
   return (
     <LocalDocumentsContext.Provider
       value={{ localDocuments, setLocalDocuments, setLocalDocument }}
@@ -242,10 +261,7 @@ const App = () => {
             key={currentDocument.name}
             documentName={currentDocument.name}
             document={currentDocument.serialized}
-            onChange={(serialized) => handleDocumentChange(currentDocumentIndex)({
-              ...currentDocument,
-              serialized,
-            })}
+            onChange={handleVisualiserChange(currentDocumentIndex)}
             initialSettings={currentDocument.visualisationSettings}
             onSettingsChange={handleDocumentVisualisationSettingsChange(currentDocumentIndex)}
             wasmFolderURL={`${process.env.PUBLIC_URL}wasm`}
