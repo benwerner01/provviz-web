@@ -3,7 +3,34 @@ import { PROVDocument } from './types';
 const examples: Omit<PROVDocument, 'updatedAt'>[] = [
   {
     name: 'Survey Results',
-    type: 'PROV-JSON',
+    type: 'PROV-N',
+    fileContent: `document
+    prefix ex <http://s11.no/survey4/>
+    wasAttributedTo(ex:graph, ex:bob)
+    wasAttributedTo(ex:dataset, ex:alice)
+    wasAttributedTo(ex:response2, ex:patient7)
+    wasAttributedTo(ex:response1, ex:patient4)
+    wasAssociatedWith(ex:surveying,ex:alice,-)
+    wasAssociatedWith(ex:analysis,ex:bob,-)
+    wasDerivedFrom(ex:dataset, ex:response1)
+    wasDerivedFrom(ex:graph, ex:dataset)
+    wasDerivedFrom(ex:dataset, ex:response2)
+    activity(ex:surveying,-,-)
+    activity(ex:analysis,-,-)
+    wasGeneratedBy(ex:graph,ex:surveying,-)
+    wasGeneratedBy(ex:dataset,ex:surveying,-)
+    agent(ex:bob)
+    agent(ex:alice)
+    agent(ex:patient4)
+    agent(ex:patient7)
+    entity(ex:graph)
+    entity(ex:dataset)
+    entity(ex:response2)
+    entity(ex:response1)
+    used(ex:surveying,ex:response1,-)
+    used(ex:analysis,ex:dataset,-)
+    used(ex:surveying,ex:response2,-)
+    endDocument`,
     serialized: {
       prefix: { ex: 'http://s11.no/survey4/' },
       wasAttributedTo: {
@@ -24,7 +51,112 @@ const examples: Omit<PROVDocument, 'updatedAt'>[] = [
   },
   {
     name: 'PROVBook',
-    type: 'PROV-JSON',
+    type: 'PROV-N',
+    fileContent: `document
+    prefix hendler <http://www.cs.rpi.edu/~hendler/>
+    prefix dct <http://purl.org/dc/terms/>
+    prefix bk <http://www.provbook.org/is/#>
+    prefix foaf <http://xmlns.com/foaf/0.1/>
+    prefix images <http://www.provbook.org/imgs/>
+    prefix provapi <http://www.provbook.org/provapi/documents/>
+    prefix provbook <http://www.provbook.org/>
+    bundle provbook:provenance
+    prefix hendler <http://www.cs.rpi.edu/~hendler/>
+    prefix dct <http://purl.org/dc/terms/>
+    prefix bk <http://www.provbook.org/is/#>
+    prefix foaf <http://xmlns.com/foaf/0.1/>
+    prefix images <http://www.provbook.org/imgs/>
+    prefix provapi <http://www.provbook.org/provapi/documents/>
+    prefix provbook <http://www.provbook.org/>
+    
+    wasAssociatedWith(bk:writeBook,provbook:Luc,-)
+    wasAssociatedWith(bk:writeBook,provbook:Paul,-)
+    specializationOf(provapi:d003.svg,provapi:d003)
+    specializationOf(provapi:d003.jpg,provapi:d003)
+    specializationOf(provapi:d000.jpg,provapi:d000)
+    specializationOf(provapi:d000.svg,provapi:d000)
+    specializationOf(provapi:d002.jpg,provapi:d002)
+    specializationOf(provapi:d002.svg,provapi:d002)
+    specializationOf(provapi:d001.jpg,provapi:d001)
+    specializationOf(provapi:d001.svg,provapi:d001)
+    wasAttributedTo(provbook:thebook, provbook:Luc,[prov:type = "prov:Creator" %% xsd:QName])
+    wasAttributedTo(provbook:thebook, provbook:Paul,[prov:type = "prov:Creator" %% xsd:QName])
+    wasAttributedTo(provapi:d000.svg, provbook:Paul,[prov:type = "prov:Creator" %% xsd:QName])
+    wasAttributedTo(provapi:d000, provbook:Luc,[prov:type = "prov:Creator" %% xsd:QName])
+    wasAttributedTo(provapi:d001, provbook:Luc,[prov:type = "prov:Creator" %% xsd:QName])
+    wasAttributedTo(provapi:d000, provbook:Paul,[prov:type = "prov:Creator" %% xsd:QName])
+    wasAttributedTo(provbook:a-little-provenance-goes-a-long-way, provbook:Paul,[prov:type = "prov:Creator" %% xsd:QName])
+    wasAttributedTo(images:bookcover.jpg, provbook:Luc,[prov:type = "prov:Creator" %% xsd:QName])
+    wasAttributedTo(images:bookcover.jpg, provbook:Paul,[prov:type = "prov:Creator" %% xsd:QName])
+    wasAttributedTo(provbook:provenance, provbook:Luc)
+    wasAttributedTo(images:bookstack.JPG, provbook:Luc,[prov:type = "prov:Creator" %% xsd:QName])
+    wasAttributedTo(provbook:provenance, provbook:Paul)
+    wasAttributedTo(provapi:d000.jpg, provbook:Luc,[prov:type = "prov:Creator" %% xsd:QName])
+    wasAttributedTo(provapi:d000.jpg, provbook:Paul,[prov:type = "prov:Creator" %% xsd:QName])
+    wasAttributedTo(provapi:d000.svg, provbook:Luc,[prov:type = "prov:Creator" %% xsd:QName])
+    wasAttributedTo(provapi:d002, provbook:Luc,[prov:type = "prov:Creator" %% xsd:QName])
+    wasAttributedTo(images:bookstack.JPG, provbook:Paul,[prov:type = "prov:Creator" %% xsd:QName])
+    wasAttributedTo(provapi:d001.svg, provbook:Paul,[prov:type = "prov:Creator" %% xsd:QName])
+    wasAttributedTo(provapi:d002.jpg, provbook:Luc,[prov:type = "prov:Creator" %% xsd:QName])
+    wasAttributedTo(provapi:d002, provbook:Paul,[prov:type = "prov:Creator" %% xsd:QName])
+    wasAttributedTo(provapi:d001.jpg, provbook:Luc,[prov:type = "prov:Creator" %% xsd:QName])
+    wasAttributedTo(provapi:d001, provbook:Paul,[prov:type = "prov:Creator" %% xsd:QName])
+    wasAttributedTo(provapi:d001.svg, provbook:Luc,[prov:type = "prov:Creator" %% xsd:QName])
+    wasAttributedTo(provapi:d001.jpg, provbook:Paul,[prov:type = "prov:Creator" %% xsd:QName])
+    wasAttributedTo(provapi:d002.svg, provbook:Luc,[prov:type = "prov:Creator" %% xsd:QName])
+    wasAttributedTo(provapi:d002.svg, provbook:Paul,[prov:type = "prov:Creator" %% xsd:QName])
+    wasAttributedTo(provapi:d002.jpg, provbook:Paul,[prov:type = "prov:Creator" %% xsd:QName])
+    wasAttributedTo(provapi:d003.jpg, provbook:Paul,[prov:type = "prov:Creator" %% xsd:QName])
+    wasAttributedTo(provapi:d003.jpg, provbook:Luc,[prov:type = "prov:Creator" %% xsd:QName])
+    wasAttributedTo(provapi:d003, provbook:Paul,[prov:type = "prov:Creator" %% xsd:QName])
+    wasAttributedTo(provapi:d003, provbook:Luc,[prov:type = "prov:Creator" %% xsd:QName])
+    wasAttributedTo(provbook:a-little-provenance-goes-a-long-way, provbook:Luc,[prov:type = "prov:Creator" %% xsd:QName])
+    wasAttributedTo(provapi:d003.svg, provbook:Paul,[prov:type = "prov:Creator" %% xsd:QName])
+    wasAttributedTo(provapi:d003.svg, provbook:Luc,[prov:type = "prov:Creator" %% xsd:QName])
+    wasGeneratedBy(provapi:d002.jpg,bk:writeBook,-)
+    wasGeneratedBy(provapi:d003.svg,bk:writeBook,-)
+    wasGeneratedBy(provapi:d002,bk:writeBook,-)
+    wasGeneratedBy(provapi:d001.svg,bk:writeBook,-)
+    wasGeneratedBy(provapi:d003.jpg,bk:writeBook,-)
+    wasGeneratedBy(provapi:d003,bk:writeBook,-)
+    wasGeneratedBy(provapi:d002.svg,bk:writeBook,-)
+    wasGeneratedBy(provbook:thebook,bk:writeBook,-)
+    wasGeneratedBy(provapi:d000,bk:writeBook,-)
+    wasGeneratedBy(provapi:d000.jpg,bk:writeBook,-)
+    wasGeneratedBy(provapi:d000.svg,bk:writeBook,-)
+    wasGeneratedBy(provapi:d001,bk:writeBook,-)
+    wasGeneratedBy(provapi:d001.jpg,bk:writeBook,-)
+    entity(images:bookcover.jpg)
+    entity(provapi:d000.svg)
+    entity(provapi:d002.svg)
+    entity(provapi:d000)
+    entity(provapi:d001)
+    entity(provbook:a-little-provenance-goes-a-long-way,[prov:value = "A little provenance goes a long way" %% xsd:string])
+    entity(provapi:d002)
+    entity(provapi:d003)
+    entity(provapi:d001.jpg)
+    entity(provapi:d000.jpg)
+    entity(provbook:provenance,[prov:type = "prov:Bundle" %% xsd:QName])
+    entity(images:bookstack.JPG)
+    entity(provbook:thebook)
+    entity(provapi:d001.svg)
+    entity(hendler:LittleSemanticsWeb.html)
+    entity(provapi:d003.jpg)
+    entity(provapi:d003.svg)
+    entity(provapi:d002.jpg)
+    wasDerivedFrom(images:bookstack.JPG, provbook:thebook)
+    wasDerivedFrom(provbook:thebook, provbook:a-little-provenance-goes-a-long-way)
+    wasDerivedFrom(images:bookcover.jpg, provbook:thebook)
+    wasDerivedFrom(provbook:thebook, provapi:d000,[prov:type = "dct:references" %% xsd:QName])
+    wasDerivedFrom(provbook:thebook, provapi:d002,[prov:type = "dct:references" %% xsd:QName])
+    wasDerivedFrom(provbook:thebook, provapi:d001,[prov:type = "dct:references" %% xsd:QName])
+    wasDerivedFrom(provbook:a-little-provenance-goes-a-long-way, hendler:LittleSemanticsWeb.html)
+    wasDerivedFrom(provbook:thebook, provapi:d003,[prov:type = "dct:references" %% xsd:QName])
+    agent(provbook:Luc,[foaf:name = "Luc Moreau" %% xsd:string])
+    agent(provbook:Paul,[foaf:name = "Paul Groth" %% xsd:string])
+    activity(bk:writeBook,-,-)
+    endBundle
+    endDocument`,
     serialized: {
       prefix: {
         dct: 'http://purl.org/dc/terms/',

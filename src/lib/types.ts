@@ -5,7 +5,8 @@ export type PROVFileType = 'PROV-N' | 'Turtle' | 'PROV-XML' | 'TriG' | 'PROV-JSO
 export type PROVDocument = {
   name: string;
   updatedAt: Date;
-  type: PROVFileType;
   serialized: object;
+  type: PROVFileType;
+  fileContent: string;
   visualisationSettings?: VisualisationSettings;
 }

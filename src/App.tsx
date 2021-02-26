@@ -167,8 +167,7 @@ const App = () => {
     setDraggingOffset(true);
   };
 
-  const handleDocumentChange = (index: number) => (serialized: object) => {
-    const updatedDocument: PROVDocument = { ...openDocuments[index], serialized };
+  const handleDocumentChange = (index: number) => (updatedDocument: PROVDocument) => {
     setOpenDocuments((documents) => [
       ...documents.slice(0, index),
       updatedDocument,
@@ -243,7 +242,10 @@ const App = () => {
             key={currentDocument.name}
             documentName={currentDocument.name}
             document={currentDocument.serialized}
-            onChange={handleDocumentChange(currentDocumentIndex)}
+            onChange={(serialized) => handleDocumentChange(currentDocumentIndex)({
+              ...currentDocument,
+              serialized,
+            })}
             initialSettings={currentDocument.visualisationSettings}
             onSettingsChange={handleDocumentVisualisationSettingsChange(currentDocumentIndex)}
             wasmFolderURL={`${process.env.PUBLIC_URL}wasm`}

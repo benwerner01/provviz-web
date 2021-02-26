@@ -102,7 +102,9 @@ const FileUploadDialog: React.FC<FileUploadDialogProps> = ({
   useEffect(() => {
     if (file && fileContent && fileType && !serializedFile) {
       translateToPROVJSON(fileContent, fileType)
-        .then((serialized) => setSerializedFile(serialized));
+        .then((serialized) => {
+          if (serialized) setSerializedFile(serialized);
+        });
     }
   }, [file, fileType, fileContent]);
 
@@ -149,11 +151,12 @@ const FileUploadDialog: React.FC<FileUploadDialogProps> = ({
   };
 
   const handleDone = () => {
-    if (fileName && fileType && serializedFile) {
+    if (fileName && fileType && fileContent && serializedFile) {
       addDocument({
         name: fileName,
         updatedAt: new Date(),
         type: fileType,
+        fileContent,
         serialized: serializedFile,
       });
       onClose();

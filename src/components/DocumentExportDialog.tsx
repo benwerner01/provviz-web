@@ -1,23 +1,22 @@
-import React, { useEffect, useLayoutEffect, useState } from 'react';
+import React, {
+  useCallback, useEffect, useLayoutEffect, useState,
+} from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
-import Select from '@material-ui/core/Select';
-import MenuItem from '@material-ui/core/MenuItem';
 import Box from '@material-ui/core/Box';
-import FormControl from '@material-ui/core/FormControl';
-import InputLabel from '@material-ui/core/InputLabel';
 import Typography from '@material-ui/core/Typography';
 import Collapse from '@material-ui/core/Collapse';
 import { saveAs } from 'file-saver';
-import { translatePROVJSONDocumentToFile } from '../lib/openProvenanceAPI';
+import { translateSerializedToFile } from '../lib/openProvenanceAPI';
 import { PROVDocument, PROVFileType } from '../lib/types';
+import PROVFileTypeSelect from './Select/PROVFileTypeSelect';
 
 const useStyles = makeStyles((theme) => ({
   dialogPaper: {
-    maxWidth: 700,
+    width: 500,
   },
   dialogContent: {
     position: 'relative',
@@ -33,6 +32,10 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   errorTypography: {
+    color: '#dc3545',
+    marginRight: theme.spacing(1),
+  },
+  errorButton: {
     color: '#dc3545',
   },
 }));
@@ -57,21 +60,55 @@ const DocumentExportDialog: React.FC<DocumentExportDialogProps> = ({
   const classes = useStyles();
 
   const [exportFileType, setExportFileType] = useState<PROVFileType>(document.type);
-  const [exportFileContent, setExportFileContent] = useState<string | undefined>();
+  const [
+    exportFileContent,
+    setExportFileContent] = useState<string | undefined>(document.fileContent);
   const [loading, setLoading] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = useState<React.ReactNode | undefined>();
 
   useLayoutEffect(() => {
     setExportFileType(document.type);
+    setExportFileContent(document.fileContent);
   }, [document]);
+
+  const translate = useCallback(() => {
+    if (document.type !== exportFileType) {
+      setLoading(true);
+      translateSerializedToFile(document.serialized, exportFileType).then((fileContent) => {
+        setLoading(false);
+        if (fileContent) setExportFileContent(fileContent);
+        else {
+          setErrorMessage(
+            <Box flexGrow={2} display="flex" alignItems="center" justifyContent="space-between">
+              <Typography className={classes.errorTypography}>
+                {'Could not translate document from '}
+                <strong>{document.type}</strong>
+                {' to '}
+                <strong>{exportFileType}</strong>
+              </Typography>
+              <Button
+                variant="outlined"
+                className={classes.errorButton}
+                onClick={() => {
+                  setErrorMessage(undefined);
+                  translate();
+                }}
+              >
+                Retry
+              </Button>
+            </Box>,
+          );
+        }
+      });
+    } else {
+      setExportFileContent(document.fileContent);
+    }
+  }, [document, exportFileType]);
 
   useEffect(() => {
     if (open) {
       setExportFileContent(undefined);
-      setLoading(true);
-      translatePROVJSONDocumentToFile(document, exportFileType).then((fileContent) => {
-        if (fileContent) setExportFileContent(fileContent);
-        setLoading(false);
-      });
+      translate();
     }
   }, [document, exportFileType, open]);
 
@@ -106,25 +143,17 @@ const DocumentExportDialog: React.FC<DocumentExportDialogProps> = ({
             flexDirection="column"
             justifyContent="space-between"
           >
-            <FormControl style={{ width: '100%' }}>
-              <InputLabel htmlFor="age-native-simple">Document Type</InputLabel>
-              <Select
-                value={exportFileType}
-                onChange={({ target }) => {
-                  setExportFileContent(undefined);
-                  setExportFileType(target.value as PROVFileType);
-                }}
-              >
-                {['PROV-N', 'Turtle', 'PROV-XML', 'TriG', 'PROV-JSON']
-                  .map((format) => <MenuItem key={format} value={format}>{format}</MenuItem>)}
-              </Select>
-            </FormControl>
-            <Collapse in={open && !loading && exportFileContent === undefined}>
-              <Typography className={classes.errorTypography}>
-                {'Could not translate PROV Document to '}
-                <i>{exportFileType}</i>
-                {' format'}
-              </Typography>
+            <PROVFileTypeSelect
+              label="Document Type"
+              width="100%"
+              value={exportFileType}
+              onChange={(updatedFileType) => {
+                setExportFileContent(undefined);
+                setExportFileType(updatedFileType);
+              }}
+            />
+            <Collapse in={open && !loading && errorMessage !== undefined}>
+              <Box mt={1}>{errorMessage}</Box>
             </Collapse>
             <Box mt={2} className={classes.buttonWrapper} display="flex" justifyContent="space-between">
               <Button
@@ -135,7 +164,7 @@ const DocumentExportDialog: React.FC<DocumentExportDialogProps> = ({
               </Button>
               <Button
                 disabled={exportFileContent === undefined}
-                variant="contained"
+                variant="outlined"
                 color="primary"
                 onClick={handleExport}
               >
