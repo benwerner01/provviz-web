@@ -16,7 +16,8 @@ const mapPROVFileTypeToContentType = (type: PROVFileType) => {
 export const translatePROVJSONDocumentToFile = async (
   document: PROVDocument, type: PROVFileType, retryCounter?: number,
 ): Promise<string | null> => (type === 'PROV-JSON'
-  ? api
+  ? JSON.stringify(document.serialized)
+  : api
     .post<string | object>('documents2', document.serialized, {
       headers: {
         'Content-Type': mapPROVFileTypeToContentType(document.type),
@@ -30,7 +31,7 @@ export const translatePROVJSONDocumentToFile = async (
       ((!retryCounter || retryCounter < 5) && response?.status === 404)
         ? translatePROVJSONDocumentToFile(document, type, (retryCounter || 0) + 1)
         : null))
-  : JSON.stringify(document.serialized));
+);
 
 export const translateToPROVJSON = (
   document: string, type: PROVFileType,

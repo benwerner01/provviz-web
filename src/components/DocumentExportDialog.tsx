@@ -42,7 +42,7 @@ const mapPROVFileTypeToFileExtension = (type: PROVFileType) => {
   if (type === 'PROV-N') return '.provn';
   if (type === 'PROV-XML') return '.xml';
   if (type === 'TriG') return '.trig';
-  return 'ttl';
+  return '.ttl';
 };
 
 type DocumentExportDialogProps = {
@@ -60,21 +60,19 @@ const DocumentExportDialog: React.FC<DocumentExportDialogProps> = ({
   const [exportFileContent, setExportFileContent] = useState<string | undefined>();
   const [loading, setLoading] = useState<boolean>(false);
 
-  const translateDocument = () => {
-    setExportFileContent(undefined);
-    setLoading(true);
-    translatePROVJSONDocumentToFile(document, exportFileType).then((fileContent) => {
-      if (fileContent) setExportFileContent(fileContent);
-      setLoading(false);
-    });
-  };
-
   useLayoutEffect(() => {
     setExportFileType(document.type);
   }, [document]);
 
   useEffect(() => {
-    if (open) translateDocument();
+    if (open) {
+      setExportFileContent(undefined);
+      setLoading(true);
+      translatePROVJSONDocumentToFile(document, exportFileType).then((fileContent) => {
+        if (fileContent) setExportFileContent(fileContent);
+        setLoading(false);
+      });
+    }
   }, [document, exportFileType, open]);
 
   const handleCancel = () => {
@@ -112,7 +110,10 @@ const DocumentExportDialog: React.FC<DocumentExportDialogProps> = ({
               <InputLabel htmlFor="age-native-simple">Document Type</InputLabel>
               <Select
                 value={exportFileType}
-                onChange={({ target }) => setExportFileType(target.value as PROVFileType)}
+                onChange={({ target }) => {
+                  setExportFileContent(undefined);
+                  setExportFileType(target.value as PROVFileType);
+                }}
               >
                 {['PROV-N', 'Turtle', 'PROV-XML', 'TriG', 'PROV-JSON']
                   .map((format) => <MenuItem key={format} value={format}>{format}</MenuItem>)}

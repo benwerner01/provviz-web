@@ -88,7 +88,7 @@ const Editor: React.FC<EditorProps> = ({
 
   useEffect(() => {
     setValue(mapPROVDocumentToMonacoValue(currentDocument));
-  }, [currentDocument.name]);
+  }, [currentDocument]);
 
   const debouncedUpdateDocument = useCallback(debounce((updatedValue: string) => {
     let serialized: object | undefined;
