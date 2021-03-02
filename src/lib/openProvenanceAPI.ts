@@ -13,6 +13,17 @@ const mapPROVFileTypeToContentType = (type: PROVFileType) => {
   return 'text/provenance-notation';
 };
 
+const getDocumentAtURL = (
+  url: string, retryCounter?: number,
+): Promise<string | null> => api.get<string | object>(url)
+  .then(({ data }) => (typeof data === 'object'
+    ? JSON.stringify(data, null, '\t')
+    : data))
+  .catch(({ response }: AxiosError) => (
+    ((!retryCounter || retryCounter < 3) && response?.status === 404)
+      ? getDocumentAtURL(url, (retryCounter || 0) + 1)
+      : null));
+
 export const translateSerializedToFile = async (
   serialized: object, type: PROVFileType, retryCounter?: number,
 ): Promise<string | null> => (type === 'PROV-JSON'
@@ -27,23 +38,39 @@ export const translateSerializedToFile = async (
     .then(({ data }) => (typeof data === 'object'
       ? JSON.stringify(data, null, '\t')
       : data))
-    .catch(({ response }: AxiosError) => (
-      ((!retryCounter || retryCounter < 5) && response?.status === 404)
-        ? translateSerializedToFile(document, type, (retryCounter || 0) + 1)
-        : null))
+    .catch(async ({ response }: AxiosError) => {
+      const { responseURL } = response?.request;
+      if (responseURL && typeof responseURL === 'string') {
+        const document = await getDocumentAtURL(responseURL);
+        if (document) return document;
+      }
+      return (
+        ((!retryCounter || retryCounter < 4) && response?.status === 404)
+          ? translateSerializedToFile(document, type, (retryCounter || 0) + 1)
+          : null);
+    })
 );
 
-export const translateToPROVJSON = (
+export const translateToPROVJSON = async (
   document: string, type: PROVFileType, retryCounter?: number,
-): Promise<object | null> => api
-  .post<object>('documents2', document, {
-    headers: {
-      'Content-Type': mapPROVFileTypeToContentType(type),
-      accept: 'application/json',
-    },
-  })
-  .then((res) => res.data)
-  .catch(({ response }: AxiosError) => (
-    ((!retryCounter || retryCounter < 5) && response?.status === 404)
-      ? translateToPROVJSON(document, type, (retryCounter || 0) + 1)
-      : null));
+): Promise<object | null> => {
+  if (type === 'PROV-JSON') {
+    try {
+      return JSON.parse(document);
+    } catch {
+      return null;
+    }
+  }
+  return api
+    .post<object>('documents2', document, {
+      headers: {
+        'Content-Type': mapPROVFileTypeToContentType(type),
+        accept: 'application/json',
+      },
+    })
+    .then(({ data }) => data)
+    .catch(({ response }: AxiosError) => (
+      ((!retryCounter || retryCounter < 5) && response?.status === 404)
+        ? translateToPROVJSON(document, type, (retryCounter || 0) + 1)
+        : null));
+};
