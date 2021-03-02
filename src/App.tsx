@@ -104,6 +104,20 @@ const App = () => {
     }
   };
 
+  const onKeyDown = (e: KeyboardEvent) => {
+    if (e.key === 's' && (navigator.platform.match('Mac') ? e.metaKey : e.ctrlKey)) {
+      e.preventDefault();
+      setDocumentExportDialogOpen(true);
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener('keydown', onKeyDown);
+    return () => {
+      window.removeEventListener('keydown', onKeyDown);
+    };
+  }, []);
+
   useEffect(() => {
     if (slug) {
       if (currentDocument) {
