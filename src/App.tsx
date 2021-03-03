@@ -250,7 +250,7 @@ const App = () => {
         exportDocument={() => setDocumentExportDialogOpen(true)}
       />
       <div ref={contentWrapperRef} className={classes.contentWrapper}>
-        {!currentDocument && <NoCurrentDocument addDocument={openDocument} />}
+        {!currentDocument && <NoCurrentDocument />}
         {contentWrapperDimension && offset && currentDocument && (
         <>
           {layout.code && (
