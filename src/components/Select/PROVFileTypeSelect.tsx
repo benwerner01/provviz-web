@@ -11,10 +11,17 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: theme.palette.common.white,
     transform: 'translate(8px, -6px) scale(0.75) !important',
   },
-  selectOutlined: {
-    padding: theme.spacing(1.25, 1),
-    backgroundColor: theme.palette.common.white,
+  selectedRoot: {
+    overflow: 'hidden',
   },
+  selectOutlined: ({ label }: { label?: string }) => ({
+    fontWeight: 800,
+    padding: label === undefined ? theme.spacing(0.5) : theme.spacing(1.25, 1),
+    backgroundColor: theme.palette.common.white,
+    '&:focus': {
+      backgroundColor: theme.palette.common.white,
+    },
+  }),
 }));
 
 type PROVFileTypeSelectProps = {
@@ -27,14 +34,14 @@ type PROVFileTypeSelectProps = {
 const PROVFileTypeSelect: React.FC<PROVFileTypeSelectProps> = ({
   label, width, value, onChange,
 }) => {
-  const classes = useStyles();
+  const classes = useStyles({ label });
   return (
     <FormControl variant="outlined" style={{ width }}>
       {label && <InputLabel classes={{ shrink: classes.labelShrink }}>{label}</InputLabel>}
       <Select
         value={value}
         onChange={({ target }) => onChange(target.value as PROVFileType)}
-        classes={{ outlined: classes.selectOutlined }}
+        classes={{ root: classes.selectedRoot, outlined: classes.selectOutlined }}
       >
         {['PROV-N', 'Turtle', 'PROV-XML', 'TriG', 'PROV-JSON']
           .map((format) => <MenuItem key={format} value={format}>{format}</MenuItem>)}

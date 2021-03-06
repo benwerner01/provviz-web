@@ -1,10 +1,15 @@
 import React, { useEffect, useRef, useState } from 'react';
-import Visualiser, { MIN_WIDTH, VisualisationSettings } from 'provviz';
+import Visualiser, { MIN_WIDTH as MIN_VISUALISER_WIDTH, VisualisationSettings } from 'provviz';
 import { makeStyles } from '@material-ui/core/styles';
 import Box from '@material-ui/core/Box';
 import DragHandleIcon from '@material-ui/icons/DragHandle';
 import { useHistory, useParams } from 'react-router-dom';
 import slugify from 'slugify';
+import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
+import IconButton from '@material-ui/core/IconButton';
+import CloseIcon from '@material-ui/icons/Close';
+import Collapse from '@material-ui/core/Collapse';
+import Typography from '@material-ui/core/Typography';
 import MenuBar, { Layout, MENU_BAR_HEIGHT } from './components/MenuBar';
 import Editor from './components/Editor';
 import FileUploadDialog from './components/FileUploadDialog';
@@ -13,10 +18,17 @@ import LocalDocumentsContext, { getLocalStorageDocuments, setLocalStorageDocumen
 import NoCurrentDocument from './components/NoCurrentDocument';
 import DocumentExportDialog from './components/DocumentExportDialog';
 import { translateSerializedToFile } from './lib/openProvenanceAPI';
+import Tabs, { TABS_HEIGHT } from './components/Tabs';
 
+// Global Constants
+export const MIN_CODE_WIDTH = 320;
+export { MIN_WIDTH as MIN_VISUALISER_WIDTH } from 'provviz';
+
+// Local Constants
 const DRAGGABLE_WIDTH = 12;
+const DEFAULT_OFFSET_RATIO = 0.5;
 
-type Dimension = {
+export type Dimension = {
   width: number;
   height: number;
 }
@@ -25,7 +37,7 @@ const useStyles = makeStyles((theme) => ({
   contentWrapper: {
     position: 'relative',
     display: 'flex',
-    height: `calc(100% - ${MENU_BAR_HEIGHT}px)`,
+    height: `calc(100% - ${MENU_BAR_HEIGHT}px - ${TABS_HEIGHT + 1}px)`,
     overflow: 'hidden',
   },
   draggable: {
@@ -39,13 +51,17 @@ const useStyles = makeStyles((theme) => ({
     borderBottomWidth: 0,
     height: '100%',
     width: DRAGGABLE_WIDTH,
-    '&:hover': {
-      cursor: 'col-resize',
-    },
     '& svg': {
       position: 'relative',
       transform: 'rotate(90deg)',
       left: -1 * (DRAGGABLE_WIDTH / 2),
+    },
+  },
+  errorMessageWrapper: {
+    backgroundColor: '#dc3545',
+    color: theme.palette.common.white,
+    '& svg': {
+      color: theme.palette.common.white,
     },
   },
 }));
@@ -63,18 +79,38 @@ const App = () => {
   const [fileUploadDialogOpen, setFileUploadDialogOpen] = useState<boolean>(false);
   const [documentExportDialogOpen, setDocumentExportDialogOpen] = useState<boolean>(false);
 
-  const [layout, setLayout] = useState<Layout>({ code: true, visualisation: true });
+  const [loading, setLoading] = useState<boolean>(false);
+  const [savingError, setSavingError] = useState<boolean>(false);
+  const [layout, setLayout] = useState<Layout>({
+    code: false,
+    visualisation: true,
+  });
   const [draggingOffset, setDraggingOffset] = useState<boolean>(false);
-  const [offset, setOffset] = useState<number | undefined>();
+  const [offsetRatio, setOffsetRatio] = useState<number | undefined>();
   const [
     contentWrapperDimension,
     setContentWrapperDimension] = useState<Dimension | undefined>();
+  const [errorMessage, setErrorMessage] = useState<React.ReactNode | undefined>();
 
   const calculateDimensions = () => {
     if (contentWrapperRef.current) {
       const { width, height } = contentWrapperRef.current.getBoundingClientRect();
       setContentWrapperDimension({ width, height });
-      if (!offset) setOffset(width / 2);
+      if (offsetRatio) {
+        if (layout.code && layout.visualisation) {
+          const codeWidth = width * offsetRatio;
+          if (codeWidth < MIN_CODE_WIDTH) setLayout({ code: false, visualisation: true });
+          const visualisationWidth = width - codeWidth;
+          if (visualisationWidth < MIN_VISUALISER_WIDTH) {
+            setLayout({ code: true, visualisation: false });
+          }
+        }
+      } else {
+        if (width * DEFAULT_OFFSET_RATIO > MIN_CODE_WIDTH) {
+          setLayout({ code: true, visualisation: true });
+        }
+        setOffsetRatio(DEFAULT_OFFSET_RATIO);
+      }
     }
   };
 
@@ -150,36 +186,64 @@ const App = () => {
 
   useEffect(() => {
     calculateDimensions();
-    window.addEventListener('resize', calculateDimensions);
-    return () => {
-      window.removeEventListener('resize', calculateDimensions);
-    };
-  }, []);
+  }, [currentDocument]);
 
-  const handleMouseUp = () => {
+  const handlePointerUp = () => {
     if (draggingOffset) setDraggingOffset(false);
   };
 
   const handlePointerMove = ({ clientX }: PointerEvent) => {
     if (contentWrapperDimension && draggingOffset) {
-      const updatedOffset = contentWrapperDimension.width - clientX;
-      if (
-        updatedOffset > MIN_WIDTH
-        && contentWrapperDimension.width - updatedOffset > MIN_WIDTH) setOffset(updatedOffset);
+      const { width } = contentWrapperDimension;
+      const updatedOffsetRatio = clientX / width;
+      const codeWidth = width * updatedOffsetRatio;
+      const visualisationWidth = width - codeWidth;
+      if (codeWidth < MIN_CODE_WIDTH) {
+        setLayout({ code: false, visualisation: true });
+      } else if (visualisationWidth < MIN_VISUALISER_WIDTH) {
+        setLayout({ code: true, visualisation: false });
+      } else {
+        if (!layout.code || !layout.visualisation) setLayout({ code: true, visualisation: true });
+        setOffsetRatio(updatedOffsetRatio);
+      }
     }
   };
 
   useEffect(() => {
-    window.addEventListener('pointerup', handleMouseUp);
-    window.addEventListener('pointermove', handlePointerMove);
+    window.addEventListener('resize', calculateDimensions);
     return () => {
-      window.removeEventListener('pointerup', handleMouseUp);
-      window.removeEventListener('pointermove', handlePointerMove);
+      window.removeEventListener('resize', calculateDimensions);
     };
-  });
+  }, [offsetRatio, layout]);
+
+  useEffect(() => {
+    window.addEventListener('pointerup', handlePointerUp);
+    window.addEventListener('pointermove', handlePointerMove);
+    window.addEventListener('resize', calculateDimensions);
+    return () => {
+      window.removeEventListener('pointerup', handlePointerUp);
+      window.removeEventListener('pointermove', handlePointerMove);
+      window.removeEventListener('resize', calculateDimensions);
+    };
+  }, [draggingOffset, layout]);
 
   const handleDraggableMouseDown = () => {
-    setDraggingOffset(true);
+    if (!contentWrapperDimension || !offsetRatio) return;
+    const potentialCodeWidth = contentWrapperDimension.width * offsetRatio;
+    const potentialVisualisationWidth = contentWrapperDimension.width - potentialCodeWidth;
+    if (layout.code && !layout.visualisation) {
+      setLayout({
+        code: potentialCodeWidth > MIN_CODE_WIDTH,
+        visualisation: true,
+      });
+    } else if (!layout.code && layout.visualisation) {
+      setLayout({
+        code: true,
+        visualisation: potentialVisualisationWidth > MIN_VISUALISER_WIDTH,
+      });
+    } else {
+      setDraggingOffset(true);
+    }
   };
 
   const handleDocumentChange = (index: number) => (updatedDocument: PROVDocument) => {
@@ -235,61 +299,108 @@ const App = () => {
         addDocument={openDocument}
       />
       {currentDocument && (
-      <DocumentExportDialog
-        open={documentExportDialogOpen}
-        document={currentDocument}
-        onClose={() => setDocumentExportDialogOpen(false)}
-      />
+        <DocumentExportDialog
+          open={documentExportDialogOpen}
+          document={currentDocument}
+          onClose={() => setDocumentExportDialogOpen(false)}
+        />
       )}
       <MenuBar
+        contentWrapperDimension={contentWrapperDimension}
+        currentDocument={currentDocument}
         layout={layout}
-        openDocuments={openDocuments}
+        setLoading={setLoading}
         setLayout={setLayout}
+        onOpenDocumentChange={handleDocumentChange(currentDocumentIndex)}
+        setErrorMessage={setErrorMessage}
+        openDocuments={openDocuments}
         openDocument={openDocument}
         openFileUploadDialog={() => setFileUploadDialogOpen(true)}
         exportDocument={() => setDocumentExportDialogOpen(true)}
       />
-      <div ref={contentWrapperRef} className={classes.contentWrapper}>
-        {!currentDocument && <NoCurrentDocument />}
-        {contentWrapperDimension && offset && currentDocument && (
+      {!currentDocument && <NoCurrentDocument />}
+      {currentDocument && (
         <>
-          {layout.code && (
-          <Editor
+          <Tabs
+            loading={loading}
+            savingError={savingError}
             openDocuments={openDocuments}
             setOpenDocuments={setOpenDocuments}
             currentDocumentIndex={currentDocumentIndex}
-            onChange={handleDocumentChange(currentDocumentIndex)}
             setCurrentDocumentIndex={setCurrentDocumentIndex}
-            width={layout.visualisation
-              ? contentWrapperDimension.width - offset
-              : contentWrapperDimension.width}
-            height={contentWrapperDimension.height}
+            setErrorMessage={setErrorMessage}
           />
-          )}
-          {layout.code && layout.visualisation && (
-          <Box
-            onMouseDown={handleDraggableMouseDown}
-            className={classes.draggable}
-          >
-            <DragHandleIcon />
-          </Box>
-          )}
-          {layout.visualisation && (
-          <Visualiser
-            key={currentDocument.name}
-            documentName={currentDocument.name}
-            document={currentDocument.serialized}
-            onChange={handleVisualiserChange(currentDocumentIndex)}
-            initialSettings={currentDocument.visualisationSettings}
-            onSettingsChange={handleDocumentVisualisationSettingsChange(currentDocumentIndex)}
-            wasmFolderURL={`${process.env.PUBLIC_URL}wasm`}
-            width={layout.code ? offset : contentWrapperDimension.width}
-            height={contentWrapperDimension.height}
-          />
-          )}
+          <Collapse in={errorMessage !== undefined}>
+            <Box
+              className={classes.errorMessageWrapper}
+              px={1}
+              display="flex"
+              alignItems="center"
+              justifyContent="space-between"
+            >
+              {typeof errorMessage === 'string'
+                ? <Typography>{errorMessage}</Typography>
+                : errorMessage}
+              <IconButton onClick={() => setErrorMessage(undefined)}>
+                <CloseIcon />
+              </IconButton>
+            </Box>
+          </Collapse>
+          <div ref={contentWrapperRef} className={classes.contentWrapper}>
+            {contentWrapperDimension && offsetRatio && (
+              <>
+                {layout.code && (
+                <Editor
+                  currentDocument={currentDocument}
+                  setLoading={setLoading}
+                  setSavingError={setSavingError}
+                  onChange={handleDocumentChange(currentDocumentIndex)}
+                  width={layout.visualisation
+                    ? contentWrapperDimension.width * offsetRatio - DRAGGABLE_WIDTH * 0.5
+                    : contentWrapperDimension.width - DRAGGABLE_WIDTH}
+                  height={contentWrapperDimension.height}
+                />
+                )}
+                <Box
+                  style={{ cursor: (layout.code && layout.visualisation) ? 'col-resize' : 'pointer' }}
+                  onMouseDown={handleDraggableMouseDown}
+                  className={classes.draggable}
+                >
+                  {layout.code && layout.visualisation
+                    ? <DragHandleIcon />
+                    : (
+                      <ArrowBackIosIcon style={{
+                        transform: `rotate(${layout.code ? 0 : 180}deg)`,
+                        left: layout.visualisation ? -1 * (DRAGGABLE_WIDTH / 1.5) : 0,
+                        fontSize: 20,
+                      }}
+                      />
+                    ) }
+                </Box>
+                {layout.visualisation && (
+                <Visualiser
+                  key={currentDocument.name}
+                  documentName={currentDocument.name}
+                  document={currentDocument.serialized}
+                  onChange={handleVisualiserChange(currentDocumentIndex)}
+                  initialSettings={currentDocument.visualisationSettings}
+                  onSettingsChange={handleDocumentVisualisationSettingsChange(currentDocumentIndex)}
+                  wasmFolderURL={`${process.env.PUBLIC_URL}wasm`}
+                  width={layout.code
+                    ? (
+                      contentWrapperDimension.width
+                        - (contentWrapperDimension.width * offsetRatio)
+                        - DRAGGABLE_WIDTH * 0.5
+                    )
+                    : contentWrapperDimension.width - DRAGGABLE_WIDTH}
+                  height={contentWrapperDimension.height}
+                />
+                )}
+              </>
+            )}
+          </div>
         </>
-        )}
-      </div>
+      )}
     </LocalDocumentsContext.Provider>
   );
 };

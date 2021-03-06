@@ -1,4 +1,6 @@
-import React, { useContext, useRef, useState } from 'react';
+import React, {
+  ReactNode, useContext, useRef, useState,
+} from 'react';
 import Box from '@material-ui/core/Box';
 import { makeStyles } from '@material-ui/core/styles';
 import Popper from '@material-ui/core/Popper';
@@ -7,12 +9,16 @@ import Button from '@material-ui/core/Button';
 import CodeIcon from '@material-ui/icons/Code';
 import VisibilityIcon from '@material-ui/icons/Visibility';
 import Fade from '@material-ui/core/Fade';
+import Typography from '@material-ui/core/Typography';
 import Menu, { MenuItem, SubMenu } from 'rc-menu';
 import { ClickAwayListener } from '@material-ui/core';
 import './MenuBar.css';
 import examples from '../lib/examples';
-import { PROVDocument } from '../lib/types';
+import { PROVDocument, PROVFileType } from '../lib/types';
 import LocalDocumentsContext from './context/LocalDocumentsContext';
+import { translateSerializedToFile } from '../lib/openProvenanceAPI';
+import PROVFileTypeSelect from './Select/PROVFileTypeSelect';
+import { Dimension, MIN_CODE_WIDTH, MIN_VISUALISER_WIDTH } from '../App';
 
 export const MENU_BAR_HEIGHT = 36;
 
@@ -40,13 +46,20 @@ const useStyles = makeStyles((theme) => ({
     '&:hover': {
       backgroundColor: theme.palette.grey[400],
     },
-  },
-  selectedButtonGroupButton: {
-    backgroundColor: theme.palette.primary.main,
-    color: theme.palette.common.white,
-    '&:hover': {
-      backgroundColor: theme.palette.primary.light,
+    '&.selected': {
+      backgroundColor: theme.palette.primary.main,
+      color: theme.palette.common.white,
+      '&:hover': {
+        backgroundColor: theme.palette.primary.light,
+      },
     },
+  },
+  buttonGroup: {
+    marginLeft: theme.spacing(1),
+  },
+  errorButton: {
+    color: '#dc3545',
+    backgroundColor: theme.palette.common.white,
   },
   button: {
     borderRadius: 0,
@@ -77,21 +90,31 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 type MenuBarProps = {
+  contentWrapperDimension?: Dimension;
+  currentDocument?: PROVDocument;
   layout: Layout
   openDocuments: PROVDocument[];
+  setLoading: (loading: boolean) => void;
   setLayout: React.Dispatch<React.SetStateAction<Layout>>;
   exportDocument: () => void;
   openDocument: (document: PROVDocument) => void;
   openFileUploadDialog: () => void;
+  onOpenDocumentChange: (updatedDocument: PROVDocument) => void;
+  setErrorMessage: (errorMessage: ReactNode) => void;
 }
 
 const MenuBar: React.FC<MenuBarProps> = ({
+  currentDocument,
   layout,
   openDocuments,
+  contentWrapperDimension,
+  setLoading,
   setLayout,
   exportDocument,
   openDocument,
   openFileUploadDialog,
+  onOpenDocumentChange,
+  setErrorMessage,
 }) => {
   const classes = useStyles();
   const openButton = useRef<HTMLButtonElement>(null);
@@ -102,6 +125,44 @@ const MenuBar: React.FC<MenuBarProps> = ({
   const handleDocumentClick = (document: PROVDocument) => {
     setMenuIsOpen(false);
     openDocument(document);
+  };
+
+  const handleFileTypeChange = (updatedFileType: PROVFileType) => {
+    if (!currentDocument) return;
+    setLoading(true);
+    translateSerializedToFile(
+      currentDocument.serialized, updatedFileType,
+    ).then((updatedFileContent) => {
+      setLoading(false);
+      if (updatedFileContent) {
+        onOpenDocumentChange({
+          ...currentDocument,
+          type: updatedFileType,
+          fileContent: updatedFileContent,
+        });
+      } else {
+        setErrorMessage(
+          <Box flexGrow={2} display="flex" alignItems="center" justifyContent="space-between">
+            <Typography>
+              {'Could not translate document from '}
+              <strong>{currentDocument.type}</strong>
+              {' to '}
+              <strong>{updatedFileType}</strong>
+            </Typography>
+            <Button
+              variant="contained"
+              className={classes.errorButton}
+              onClick={() => {
+                setErrorMessage(undefined);
+                handleFileTypeChange(updatedFileType);
+              }}
+            >
+              Retry
+            </Button>
+          </Box>,
+        );
+      }
+    });
   };
 
   return (
@@ -167,30 +228,55 @@ const MenuBar: React.FC<MenuBarProps> = ({
           </ClickAwayListener>
         </Popper>
       </Box>
-      <ButtonGroup variant="contained" aria-label="outlined primary button group">
-        <Button
-          className={layout.code
-            ? [classes.selectedButtonGroupButton, classes.buttonGroupButton].join(' ')
-            : classes.buttonGroupButton}
-          onClick={() => setLayout((prev) => ({
-            code: !prev.code,
-            visualisation: prev.code ? true : prev.visualisation,
-          }))}
-        >
-          <CodeIcon />
-        </Button>
-        <Button
-          className={layout.visualisation
-            ? [classes.selectedButtonGroupButton, classes.buttonGroupButton].join(' ')
-            : classes.buttonGroupButton}
-          onClick={() => setLayout((prev) => ({
-            code: prev.visualisation ? true : prev.code,
-            visualisation: !prev.visualisation,
-          }))}
-        >
-          <VisibilityIcon />
-        </Button>
-      </ButtonGroup>
+      <Box display="flex">
+        <Fade in={currentDocument !== undefined}>
+          <Box>
+            {currentDocument && (
+            <PROVFileTypeSelect
+              width={135}
+              value={currentDocument.type}
+              onChange={handleFileTypeChange}
+            />
+            )}
+          </Box>
+        </Fade>
+        <ButtonGroup className={classes.buttonGroup} variant="contained">
+          <Button
+            className={layout.code
+              ? ['selected', classes.buttonGroupButton].join(' ')
+              : classes.buttonGroupButton}
+            onClick={() => setLayout((prev) => ({
+              code: !prev.code,
+              visualisation: prev.code
+                ? true
+                : (
+                  contentWrapperDimension
+                  && contentWrapperDimension.width - MIN_CODE_WIDTH < MIN_VISUALISER_WIDTH)
+                  ? false
+                  : prev.visualisation,
+            }))}
+          >
+            <CodeIcon />
+          </Button>
+          <Button
+            className={layout.visualisation
+              ? ['selected', classes.buttonGroupButton].join(' ')
+              : classes.buttonGroupButton}
+            onClick={() => setLayout((prev) => ({
+              code: prev.visualisation
+                ? true
+                : (
+                  contentWrapperDimension
+                  && contentWrapperDimension.width - MIN_VISUALISER_WIDTH < MIN_CODE_WIDTH)
+                  ? false
+                  : prev.code,
+              visualisation: !prev.visualisation,
+            }))}
+          >
+            <VisibilityIcon />
+          </Button>
+        </ButtonGroup>
+      </Box>
     </Box>
   );
 };
