@@ -1117,9 +1117,9 @@
     regenerator-runtime "^0.13.4"
 
 "@babel/runtime@^7.3.1", "@babel/runtime@^7.4.4", "@babel/runtime@^7.5.5", "@babel/runtime@^7.7.2", "@babel/runtime@^7.8.3", "@babel/runtime@^7.8.7":
-  version "7.13.9"
-  resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.13.9.tgz#97dbe2116e2630c489f22e0656decd60aaa1fcee"
-  integrity sha512-aY2kU+xgJ3dJ1eU6FMB9EH8dIe8dmusF1xEku52joLvw6eAFN0AI+WxCLDnpev2LEejWBAy2sBvBOBAjI3zmvA==
+  version "7.13.10"
+  resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.13.10.tgz#47d42a57b6095f4468da440388fdbad8bebf0d7d"
+  integrity sha512-4QPkjJq6Ns3V/RgpEahRk+AGfL0eO6RHHtTWoNNr5mO49G6B5+X6d6THgWEAvTrznU5xYpbAlVKRYcsCgh/Akw==
   dependencies:
     regenerator-runtime "^0.13.4"
 
@@ -9549,9 +9549,9 @@ prop-types@^15.5.10, prop-types@^15.5.9, prop-types@^15.6.1, prop-types@^15.6.2,
     react-is "^16.8.1"
 
 provviz@^1.0.0:
-  version "1.24.0"
-  resolved "https://registry.yarnpkg.com/provviz/-/provviz-1.24.0.tgz#205c28804b53a45d422aee9febf758f07582ac3d"
-  integrity sha512-c3YbYFUe2IWZNqR4s5oXRSxBSiZ4OOelu+/cbtV3xXwdylLpG5KPoXnrY4+B0JhVa69o4pjDjd9HRdcz91IXyw==
+  version "1.26.0"
+  resolved "https://registry.yarnpkg.com/provviz/-/provviz-1.26.0.tgz#f88bd651c7a435da1e53472b9f619c599a878ba1"
+  integrity sha512-jQ1E02RfuGaapZfsMtVN0QTF2qI4a8x/urb0iGI5VUhQ08kr+TyddbGgEppjVH9tbepT3DF2ktp8EkPoSM6d2g==
   dependencies:
     "@hpcc-js/wasm" "0.3.13"
     "@material-ui/core" "^4.11.0"
