@@ -9,14 +9,14 @@ import { PROVFileType } from '../../lib/types';
 const useStyles = makeStyles((theme) => ({
   labelShrink: {
     backgroundColor: theme.palette.common.white,
-    transform: 'translate(8px, -6px) scale(0.75) !important',
+    transform: 'translate(14px, -6px) scale(0.75) !important',
   },
   selectedRoot: {
     overflow: 'hidden',
   },
   selectOutlined: ({ label }: { label?: string }) => ({
     fontWeight: 800,
-    padding: label === undefined ? theme.spacing(0.5) : theme.spacing(1.25, 1),
+    padding: label === undefined ? theme.spacing(0.5) : theme.spacing(1.25, 1.75),
     backgroundColor: theme.palette.common.white,
     '&:focus': {
       backgroundColor: theme.palette.common.white,

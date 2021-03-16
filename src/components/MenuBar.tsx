@@ -99,6 +99,8 @@ type MenuBarProps = {
   exportDocument: () => void;
   openDocument: (document: PROVDocument) => void;
   openFileUploadDialog: () => void;
+  openCreateDocumentDialog: () => void;
+  generateUniqueDocumentName: (name: string) => string;
   onOpenDocumentChange: (updatedDocument: PROVDocument) => void;
   setErrorMessage: (errorMessage: ReactNode) => void;
 }
@@ -113,6 +115,8 @@ const MenuBar: React.FC<MenuBarProps> = ({
   exportDocument,
   openDocument,
   openFileUploadDialog,
+  openCreateDocumentDialog,
+  generateUniqueDocumentName,
   onOpenDocumentChange,
   setErrorMessage,
 }) => {
@@ -211,7 +215,7 @@ const MenuBar: React.FC<MenuBarProps> = ({
                     key={document.name}
                     className={classes.menuItem}
                     onClick={() => handleDocumentClick({
-                      ...document, name: `My ${document.name}`, updatedAt: new Date(),
+                      ...document, name: generateUniqueDocumentName(`My ${document.name}`), updatedAt: new Date(),
                     })}
                   >
                     {document.name}
@@ -220,9 +224,15 @@ const MenuBar: React.FC<MenuBarProps> = ({
               </SubMenu>
               <MenuItem
                 className={classes.menuItem}
-                onClick={() => openFileUploadDialog()}
+                onClick={openFileUploadDialog}
               >
-                Upload
+                Upload Document
+              </MenuItem>
+              <MenuItem
+                className={classes.menuItem}
+                onClick={openCreateDocumentDialog}
+              >
+                Create Document
               </MenuItem>
             </Menu>
           </ClickAwayListener>

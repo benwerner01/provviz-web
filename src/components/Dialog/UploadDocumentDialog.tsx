@@ -10,8 +10,8 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import Box from '@material-ui/core/Box';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
-import { translateToPROVJSON } from '../lib/openProvenanceAPI';
-import { PROVDocument, PROVFileType } from '../lib/types';
+import { translateToPROVJSON } from '../../lib/openProvenanceAPI';
+import { PROVDocument, PROVFileType } from '../../lib/types';
 
 const useStyles = makeStyles((theme) => ({
   dialogPaper: {
@@ -47,7 +47,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-type FileUploadDialogProps = {
+type UploadDocumentDialogProps = {
   open: boolean;
   onClose: () => void;
   addDocument: (document: PROVDocument) => void;
@@ -57,14 +57,14 @@ const parsePROVFileType = (fileName: string): PROVFileType | undefined => {
   const lowerFileName = fileName.toLowerCase();
   if (lowerFileName.endsWith('.provn')) return 'PROV-N';
   if (lowerFileName.endsWith('.ttl')) return 'Turtle';
-  if (lowerFileName.endsWith('.xml')) return 'PROV-XML';
+  if (lowerFileName.endsWith('.provx')) return 'PROV-XML';
   if (lowerFileName.endsWith('.trig')) return 'TriG';
   if (lowerFileName.endsWith('.json')) return 'PROV-JSON';
 
   return undefined;
 };
 
-const FileUploadDialog: React.FC<FileUploadDialogProps> = ({
+const UploadDocumentDialog: React.FC<UploadDocumentDialogProps> = ({
   open, onClose, addDocument,
 }) => {
   const classes = useStyles();
@@ -287,4 +287,4 @@ const FileUploadDialog: React.FC<FileUploadDialogProps> = ({
   );
 };
 
-export default React.memo(FileUploadDialog);
+export default React.memo(UploadDocumentDialog);

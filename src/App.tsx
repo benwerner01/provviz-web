@@ -12,13 +12,14 @@ import Collapse from '@material-ui/core/Collapse';
 import Typography from '@material-ui/core/Typography';
 import MenuBar, { Layout, MENU_BAR_HEIGHT } from './components/MenuBar';
 import Editor from './components/Editor';
-import FileUploadDialog from './components/FileUploadDialog';
+import UploadDocumentDialog from './components/Dialog/UploadDocumentDialog';
+import ExportDocumentDialog from './components/Dialog/ExportDocumentDialog';
 import { PROVDocument } from './lib/types';
 import LocalDocumentsContext, { getLocalStorageDocuments, setLocalStorageDocuments } from './components/context/LocalDocumentsContext';
 import NoCurrentDocument from './components/NoCurrentDocument';
-import DocumentExportDialog from './components/DocumentExportDialog';
 import { translateSerializedToFile } from './lib/openProvenanceAPI';
 import Tabs, { TABS_HEIGHT } from './components/Tabs';
+import CreateDocumentDialog from './components/Dialog/CreateDocumentDialog';
 
 // Global Constants
 export const MIN_CODE_WIDTH = 320;
@@ -76,6 +77,7 @@ const App = () => {
   const [openDocuments, setOpenDocuments] = useState<PROVDocument[]>([]);
   const [currentDocumentIndex, setCurrentDocumentIndex] = useState<number>(-1);
 
+  const [createDocumentDialogOpen, setCreateDocumentDialogOpen] = useState<boolean>(false);
   const [fileUploadDialogOpen, setFileUploadDialogOpen] = useState<boolean>(false);
   const [documentExportDialogOpen, setDocumentExportDialogOpen] = useState<boolean>(false);
 
@@ -289,17 +291,34 @@ const App = () => {
     });
   };
 
+  const documentNameIsUnique = (documentName: string) => localDocuments
+    .find(({ name }) => documentName === name) === undefined;
+
+  const generateUniqueDocumentName = (documentName: string, index?: number): string => {
+    const potentialName = `${documentName}${index ? ` ${index}` : ''}`;
+    return documentNameIsUnique(potentialName)
+      ? potentialName
+      : generateUniqueDocumentName(documentName, (index || 0) + 1);
+  };
+
   return (
     <LocalDocumentsContext.Provider
       value={{ localDocuments, setLocalDocuments, setLocalDocument }}
     >
-      <FileUploadDialog
+      <UploadDocumentDialog
         open={fileUploadDialogOpen}
         onClose={() => setFileUploadDialogOpen(false)}
         addDocument={openDocument}
       />
+      <CreateDocumentDialog
+        open={createDocumentDialogOpen}
+        onClose={() => setCreateDocumentDialogOpen(false)}
+        openDocument={openDocument}
+        documentNameIsUnique={documentNameIsUnique}
+        generateUniqueDocumentName={generateUniqueDocumentName}
+      />
       {currentDocument && (
-        <DocumentExportDialog
+        <ExportDocumentDialog
           open={documentExportDialogOpen}
           document={currentDocument}
           onClose={() => setDocumentExportDialogOpen(false)}
@@ -316,7 +335,9 @@ const App = () => {
         openDocuments={openDocuments}
         openDocument={openDocument}
         openFileUploadDialog={() => setFileUploadDialogOpen(true)}
+        openCreateDocumentDialog={() => setCreateDocumentDialogOpen(true)}
         exportDocument={() => setDocumentExportDialogOpen(true)}
+        generateUniqueDocumentName={generateUniqueDocumentName}
       />
       {!currentDocument && <NoCurrentDocument />}
       {currentDocument && (

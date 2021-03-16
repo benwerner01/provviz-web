@@ -10,9 +10,9 @@ import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
 import Collapse from '@material-ui/core/Collapse';
 import { saveAs } from 'file-saver';
-import { translateSerializedToFile } from '../lib/openProvenanceAPI';
-import { PROVDocument, PROVFileType } from '../lib/types';
-import PROVFileTypeSelect from './Select/PROVFileTypeSelect';
+import { translateSerializedToFile } from '../../lib/openProvenanceAPI';
+import { PROVDocument, PROVFileType } from '../../lib/types';
+import PROVFileTypeSelect from '../Select/PROVFileTypeSelect';
 
 const useStyles = makeStyles((theme) => ({
   dialogPaper: {
@@ -43,18 +43,18 @@ const useStyles = makeStyles((theme) => ({
 const mapPROVFileTypeToFileExtension = (type: PROVFileType) => {
   if (type === 'PROV-JSON') return '.json';
   if (type === 'PROV-N') return '.provn';
-  if (type === 'PROV-XML') return '.xml';
+  if (type === 'PROV-XML') return '.provx';
   if (type === 'TriG') return '.trig';
   return '.ttl';
 };
 
-type DocumentExportDialogProps = {
+type ExportDocumentDialogProps = {
   open: boolean;
   document: PROVDocument;
   onClose: () => void;
 }
 
-const DocumentExportDialog: React.FC<DocumentExportDialogProps> = ({
+const ExportDocumentDialog: React.FC<ExportDocumentDialogProps> = ({
   open, document, onClose,
 }) => {
   const classes = useStyles();
@@ -178,4 +178,4 @@ const DocumentExportDialog: React.FC<DocumentExportDialogProps> = ({
   );
 };
 
-export default React.memo(DocumentExportDialog);
+export default React.memo(ExportDocumentDialog);
