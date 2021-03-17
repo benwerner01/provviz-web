@@ -308,7 +308,9 @@ const App = () => {
       <UploadDocumentDialog
         open={fileUploadDialogOpen}
         onClose={() => setFileUploadDialogOpen(false)}
-        addDocument={openDocument}
+        openDocument={openDocument}
+        documentNameIsUnique={documentNameIsUnique}
+        generateUniqueDocumentName={generateUniqueDocumentName}
       />
       <CreateDocumentDialog
         open={createDocumentDialogOpen}

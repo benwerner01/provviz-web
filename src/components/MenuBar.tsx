@@ -238,8 +238,8 @@ const MenuBar: React.FC<MenuBarProps> = ({
           </ClickAwayListener>
         </Popper>
       </Box>
-      <Box display="flex">
-        <Fade in={currentDocument !== undefined}>
+      <Fade in={currentDocument !== undefined}>
+        <Box display="flex">
           <Box>
             {currentDocument && (
             <PROVFileTypeSelect
@@ -249,44 +249,44 @@ const MenuBar: React.FC<MenuBarProps> = ({
             />
             )}
           </Box>
-        </Fade>
-        <ButtonGroup className={classes.buttonGroup} variant="contained">
-          <Button
-            className={layout.code
-              ? ['selected', classes.buttonGroupButton].join(' ')
-              : classes.buttonGroupButton}
-            onClick={() => setLayout((prev) => ({
-              code: !prev.code,
-              visualisation: prev.code
-                ? true
-                : (
-                  contentWrapperDimension
+          <ButtonGroup className={classes.buttonGroup} variant="contained">
+            <Button
+              className={layout.code
+                ? ['selected', classes.buttonGroupButton].join(' ')
+                : classes.buttonGroupButton}
+              onClick={() => setLayout((prev) => ({
+                code: !prev.code,
+                visualisation: prev.code
+                  ? true
+                  : (
+                    contentWrapperDimension
                   && contentWrapperDimension.width - MIN_CODE_WIDTH < MIN_VISUALISER_WIDTH)
-                  ? false
-                  : prev.visualisation,
-            }))}
-          >
-            <CodeIcon />
-          </Button>
-          <Button
-            className={layout.visualisation
-              ? ['selected', classes.buttonGroupButton].join(' ')
-              : classes.buttonGroupButton}
-            onClick={() => setLayout((prev) => ({
-              code: prev.visualisation
-                ? true
-                : (
-                  contentWrapperDimension
+                    ? false
+                    : prev.visualisation,
+              }))}
+            >
+              <CodeIcon />
+            </Button>
+            <Button
+              className={layout.visualisation
+                ? ['selected', classes.buttonGroupButton].join(' ')
+                : classes.buttonGroupButton}
+              onClick={() => setLayout((prev) => ({
+                code: prev.visualisation
+                  ? true
+                  : (
+                    contentWrapperDimension
                   && contentWrapperDimension.width - MIN_VISUALISER_WIDTH < MIN_CODE_WIDTH)
-                  ? false
-                  : prev.code,
-              visualisation: !prev.visualisation,
-            }))}
-          >
-            <VisibilityIcon />
-          </Button>
-        </ButtonGroup>
-      </Box>
+                    ? false
+                    : prev.code,
+                visualisation: !prev.visualisation,
+              }))}
+            >
+              <VisibilityIcon />
+            </Button>
+          </ButtonGroup>
+        </Box>
+      </Fade>
     </Box>
   );
 };

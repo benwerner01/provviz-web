@@ -125,7 +125,7 @@ const ExportDocumentDialog: React.FC<ExportDocumentDialogProps> = ({
               error={!validName}
             />
             <Box mb={1}>
-              <Collapse in={!isUnique}>
+              <Collapse in={!validName}>
                 {!isUnique && (
                 <Typography className={classes.errorTypography} gutterBottom>
                   Please enter a unique Document Name

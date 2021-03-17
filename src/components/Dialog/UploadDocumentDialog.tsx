@@ -8,6 +8,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import Box from '@material-ui/core/Box';
+import Collapse from '@material-ui/core/Collapse';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import { translateToPROVJSON } from '../../lib/openProvenanceAPI';
@@ -45,12 +46,17 @@ const useStyles = makeStyles((theme) => ({
       marginRight: theme.spacing(1),
     },
   },
+  errorTypography: {
+    color: '#dc3545',
+  },
 }));
 
 type UploadDocumentDialogProps = {
   open: boolean;
   onClose: () => void;
-  addDocument: (document: PROVDocument) => void;
+  openDocument: (document: PROVDocument) => void;
+  documentNameIsUnique: (name: string) => boolean;
+  generateUniqueDocumentName: (name: string) => string;
 }
 
 const parsePROVFileType = (fileName: string): PROVFileType | undefined => {
@@ -65,12 +71,12 @@ const parsePROVFileType = (fileName: string): PROVFileType | undefined => {
 };
 
 const UploadDocumentDialog: React.FC<UploadDocumentDialogProps> = ({
-  open, onClose, addDocument,
+  open, onClose, openDocument, documentNameIsUnique, generateUniqueDocumentName,
 }) => {
   const classes = useStyles();
 
   const [file, setFile] = useState<File | undefined>();
-  const [fileName, setFileName] = useState<string | undefined>();
+  const [fileName, setFileName] = useState<string>('');
   const [fileContent, setFileContent] = useState<string | undefined>();
   const [fileType, setFileType] = useState<PROVFileType | undefined>();
   const [serializedFile, setSerializedFile] = useState<object | undefined>();
@@ -122,7 +128,7 @@ const UploadDocumentDialog: React.FC<UploadDocumentDialogProps> = ({
 
   const reset = () => {
     setFile(undefined);
-    setFileName(undefined);
+    setFileName('');
     setFileContent(undefined);
     setFileType(undefined);
     setSerializedFile(undefined);
@@ -137,7 +143,7 @@ const UploadDocumentDialog: React.FC<UploadDocumentDialogProps> = ({
 
     if (files.length > 0) {
       setFile(files[0]);
-      setFileName(files[0].name.split('.')[0]);
+      setFileName(generateUniqueDocumentName(files[0].name.split('.')[0]));
     }
   };
 
@@ -150,9 +156,13 @@ const UploadDocumentDialog: React.FC<UploadDocumentDialogProps> = ({
     reset();
   };
 
+  const fileNameIsUnique = documentNameIsUnique(fileName);
+
+  const fileNameIsValid = fileName !== '' && fileNameIsUnique;
+
   const handleDone = () => {
-    if (fileName && fileType && fileContent && serializedFile) {
-      addDocument({
+    if (fileNameIsValid && fileType && fileContent && serializedFile) {
+      openDocument({
         name: fileName,
         updatedAt: new Date(),
         type: fileType,
@@ -252,7 +262,28 @@ const UploadDocumentDialog: React.FC<UploadDocumentDialogProps> = ({
             justifyContent="space-between"
           >
             <Box style={{ width: '100%' }}>
-              <TextField label="Name" type="text" style={{ width: '100%' }} value={fileName} onChange={handleFileNameChange} />
+              <TextField
+                label="Document Name"
+                type="text"
+                style={{ width: '100%' }}
+                value={fileName}
+                onChange={handleFileNameChange}
+                error={!fileNameIsValid}
+              />
+              <Box mb={1}>
+                <Collapse in={!fileNameIsValid}>
+                  {!fileNameIsUnique && (
+                  <Typography className={classes.errorTypography} gutterBottom>
+                    Please enter a unique Document Name
+                  </Typography>
+                  )}
+                  {fileName === '' && (
+                  <Typography className={classes.errorTypography} gutterBottom>
+                    Please enter a Document Name
+                  </Typography>
+                  )}
+                </Collapse>
+              </Box>
               <Typography>
                 {'Document Type: '}
                 <strong>{fileType}</strong>
@@ -267,7 +298,7 @@ const UploadDocumentDialog: React.FC<UploadDocumentDialogProps> = ({
               </Button>
               <Button
                 disabled={(
-                  fileName === undefined
+                  !fileNameIsValid
                   || fileType === undefined
                   || serializedFile === undefined
                 )}
