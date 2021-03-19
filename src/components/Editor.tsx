@@ -1,15 +1,49 @@
 import React, {
-  useCallback, useEffect, useLayoutEffect, useState,
+  useCallback, useContext, useEffect, useLayoutEffect, useState,
 } from 'react';
+import Box from '@material-ui/core/Box';
+import Typography from '@material-ui/core/Typography';
+import Collapse from '@material-ui/core/Collapse';
+import IconButton from '@material-ui/core/IconButton';
+import CloseIcon from '@material-ui/icons/Close';
+import TextField from '@material-ui/core/TextField';
+import Button from '@material-ui/core/Button';
+import { makeStyles } from '@material-ui/core/styles';
 import MonacoEditor, { EditorWillMount, monaco } from 'react-monaco-editor';
 import debounce from 'lodash.debounce';
 import PROVJSONSchema from '../lib/PROVJSONSchema';
 import { PROVDocument, PROVFileType } from '../lib/types';
 import CUSTOM_MONACO_LANGAUGES from '../lib/customMonacoLanguages';
 import { translateToPROVJSON } from '../lib/openProvenanceAPI';
+import LocalDocumentsContext from './context/LocalDocumentsContext';
+
+const METADATA_HEIGHT = 0;
+
+const useStyles = makeStyles((theme) => ({
+  metadataWrapper: {
+    borderColor: theme.palette.grey[300],
+    borderStyle: 'solid',
+    borderWidth: 0,
+    borderBottomWidth: 1,
+  },
+  errorTypography: {
+    color: '#dc3545',
+  },
+  deleteButton: {
+    textTransform: 'none',
+    marginRight: theme.spacing(1),
+    backgroundColor: '#dc3545',
+    color: theme.palette.common.white,
+    '&:hover': {
+      backgroundColor: '#ab2936',
+    },
+  },
+}));
 
 type EditorProps = {
+  editingMetadata: boolean;
   currentDocument: PROVDocument;
+  setEditingMetadata: (editingMetadata: boolean) => void;
   setLoading: (loading: boolean) => void;
   setSavingError: (error: boolean) => void;
   onChange: (updatedDocument: PROVDocument) => void;
@@ -24,13 +58,19 @@ const mapPROVFileTypeToMonacoLanguage = (type: PROVFileType) => {
 };
 
 const Editor: React.FC<EditorProps> = ({
+  editingMetadata,
   width,
   height,
   currentDocument,
+  setEditingMetadata,
   setLoading,
   setSavingError,
   onChange,
 }) => {
+  const { localDocuments } = useContext(LocalDocumentsContext);
+  const classes = useStyles();
+
+  const [documentName, setDocumentName] = useState<string>(currentDocument.name);
   const [editor, setEditor] = useState<monaco.editor.IStandaloneCodeEditor | undefined>();
   const [prevDocumentName, setPrevDocumentName] = useState<string>(currentDocument.name);
   const [viewStates, setViewStates] = useState<Map<string, monaco.editor.ICodeEditorViewState>>(
@@ -47,22 +87,41 @@ const Editor: React.FC<EditorProps> = ({
   }, [currentDocument]);
 
   useLayoutEffect(() => {
-    if (editor) {
-      const currentState = editor.saveViewState();
-      if (currentState) setViewStates((prev) => prev.set(prevDocumentName, currentState));
-      setPrevDocumentName(currentDocument.name);
-      const prevViewState = viewStates.get(currentDocument.name);
-      if (prevViewState) editor.restoreViewState(prevViewState);
+    if (currentDocument.name !== documentName) {
+      setDocumentName(currentDocument.name);
+      if (editor) {
+        const currentState = editor.saveViewState();
+        if (currentState) setViewStates((prev) => prev.set(prevDocumentName, currentState));
+        setPrevDocumentName(currentDocument.name);
+        const prevViewState = viewStates.get(currentDocument.name);
+        if (prevViewState) editor.restoreViewState(prevViewState);
+      }
     }
   }, [currentDocument.name]);
 
-  const debouncedUpdateDocument = useCallback(debounce(async (updatedValue: string) => {
+  const debouncedUpdateDocumentName = useCallback(debounce(async (name: string) => {
+    onChange({ ...currentDocument, name, updatedAt: new Date() });
+  }, 300), [currentDocument]);
+
+  const isUnique = localDocuments.find(({ name }) => name === documentName) === undefined;
+
+  const validDocumentName = documentName !== '' && (currentDocument.name === documentName || isUnique);
+
+  useEffect(() => {
+    if (currentDocument.name !== documentName && validDocumentName) {
+      debouncedUpdateDocumentName(documentName);
+    }
+  }, [validDocumentName, documentName]);
+
+  const debouncedUpdateDocumentValue = useCallback(debounce(async (updatedValue: string) => {
     setLoading(true);
     const serialized = await translateToPROVJSON(updatedValue, currentDocument.type);
 
     if (serialized) {
       setLastSavedFileContent(updatedValue);
-      onChange({ ...currentDocument, serialized, fileContent: updatedValue });
+      onChange({
+        ...currentDocument, serialized, fileContent: updatedValue, updatedAt: new Date(),
+      });
       setSavingError(false);
     } else setSavingError(true);
 
@@ -70,7 +129,7 @@ const Editor: React.FC<EditorProps> = ({
   }, 300), [currentDocument]);
 
   const handleMonacoChange = (newValue: string) => {
-    debouncedUpdateDocument(newValue);
+    debouncedUpdateDocumentValue(newValue);
     setValue(newValue);
   };
 
@@ -92,16 +151,47 @@ const Editor: React.FC<EditorProps> = ({
   };
 
   return (
-    <MonacoEditor
-      width={width}
-      height={height}
-      options={{ fontSize: 16 }}
-      language={mapPROVFileTypeToMonacoLanguage(currentDocument.type)}
-      value={value}
-      onChange={handleMonacoChange}
-      editorWillMount={handleEditorWillMount}
-      editorDidMount={(mountedEditor) => setEditor(mountedEditor)}
-    />
+    <Box>
+      <Collapse in={editingMetadata}>
+        <Box className={classes.metadataWrapper} p={1} display="flex" justifyContent="space-between" alignItems="center">
+          <Box style={{ position: 'relative' }} flexGrow={1}>
+            <TextField
+              label="Document Name"
+              type="text"
+              style={{ width: 250 }}
+              value={documentName}
+              onChange={({ target }) => setDocumentName(target.value)}
+              error={!validDocumentName}
+            />
+            <Box mb={1}>
+              <Collapse in={!validDocumentName}>
+                {!isUnique && (
+                <Typography className={classes.errorTypography} gutterBottom>
+                  Please enter a unique Document Name
+                </Typography>
+                )}
+                {documentName === '' && (
+                <Typography className={classes.errorTypography} gutterBottom>
+                  Please enter a Document Name
+                </Typography>
+                )}
+              </Collapse>
+            </Box>
+          </Box>
+          <IconButton onClick={(() => setEditingMetadata(false))}><CloseIcon /></IconButton>
+        </Box>
+      </Collapse>
+      <MonacoEditor
+        width={width}
+        height={height - (editingMetadata ? METADATA_HEIGHT : 0)}
+        options={{ fontSize: 16 }}
+        language={mapPROVFileTypeToMonacoLanguage(currentDocument.type)}
+        value={value}
+        onChange={handleMonacoChange}
+        editorWillMount={handleEditorWillMount}
+        editorDidMount={(mountedEditor) => setEditor(mountedEditor)}
+      />
+    </Box>
   );
 };
 

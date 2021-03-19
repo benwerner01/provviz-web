@@ -76,6 +76,7 @@ const App = () => {
   const [localDocuments, setLocalDocuments] = useState<PROVDocument[]>(getLocalStorageDocuments());
   const [openDocuments, setOpenDocuments] = useState<PROVDocument[]>([]);
   const [currentDocumentIndex, setCurrentDocumentIndex] = useState<number>(-1);
+  const [editingMetadata, setEditingMetadata] = useState<boolean>(false);
 
   const [createDocumentDialogOpen, setCreateDocumentDialogOpen] = useState<boolean>(false);
   const [fileUploadDialogOpen, setFileUploadDialogOpen] = useState<boolean>(false);
@@ -249,17 +250,27 @@ const App = () => {
   };
 
   const handleDocumentChange = (index: number) => (updatedDocument: PROVDocument) => {
+    const documentName = openDocuments[index].name;
+    setLocalDocuments((documents) => {
+      const i = documents.findIndex(({ name }) => name === documentName);
+      if (i < 0) throw new Error(`Document with name ${documentName} not found`);
+      return [
+        ...localDocuments.slice(0, i),
+        updatedDocument,
+        ...localDocuments.slice(i + 1, localDocuments.length),
+      ];
+    });
     setOpenDocuments((documents) => [
       ...documents.slice(0, index),
       updatedDocument,
       ...documents.slice(index + 1, documents.length),
     ]);
-    setLocalDocument(updatedDocument);
   };
 
   const handleDocumentVisualisationSettingsChange = (index: number) => (
     visualisationSettings: VisualisationSettings,
   ) => {
+    const { name } = openDocuments[index];
     const updatedDocument: PROVDocument = { ...openDocuments[index], visualisationSettings };
     setOpenDocuments((documents) => [
       ...documents.slice(0, index),
@@ -270,7 +281,7 @@ const App = () => {
   };
 
   const handleVisualiserChange = (index: number) => (serialized: object) => {
-    const { type } = openDocuments[index];
+    const { name, type } = openDocuments[index];
     setOpenDocuments((documents) => [
       ...documents.slice(0, index),
       { ...openDocuments[index], serialized },
@@ -352,6 +363,7 @@ const App = () => {
             currentDocumentIndex={currentDocumentIndex}
             setCurrentDocumentIndex={setCurrentDocumentIndex}
             setErrorMessage={setErrorMessage}
+            setEditingMetadata={setEditingMetadata}
           />
           <Collapse in={errorMessage !== undefined}>
             <Box
@@ -374,6 +386,8 @@ const App = () => {
               <>
                 {layout.code && (
                 <Editor
+                  editingMetadata={editingMetadata}
+                  setEditingMetadata={setEditingMetadata}
                   currentDocument={currentDocument}
                   setLoading={setLoading}
                   setSavingError={setSavingError}
@@ -402,7 +416,7 @@ const App = () => {
                 </Box>
                 {layout.visualisation && (
                 <Visualiser
-                  key={currentDocument.name}
+                  key={currentDocumentIndex}
                   documentName={currentDocument.name}
                   document={currentDocument.serialized}
                   onChange={handleVisualiserChange(currentDocumentIndex)}

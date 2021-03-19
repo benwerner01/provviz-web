@@ -5,6 +5,7 @@ import Tab from '@material-ui/core/Tab';
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
 import CloseIcon from '@material-ui/icons/Close';
+import EditIcon from '@material-ui/icons/Edit';
 import Fade from '@material-ui/core/Fade';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import WarningIcon from '@material-ui/icons/Warning';
@@ -66,6 +67,7 @@ const useStyles = makeStyles((theme) => ({
 type TabsMenuBarProps = {
   openDocuments: PROVDocument[];
   setOpenDocuments: (documents: PROVDocument[]) => void;
+  setEditingMetadata: React.Dispatch<React.SetStateAction<boolean>>;
   currentDocumentIndex: number;
   setCurrentDocumentIndex: (index: number) => void;
   setErrorMessage: (errorMessage: ReactNode) => void;
@@ -77,6 +79,7 @@ const TabsComponent: React.FC<TabsMenuBarProps> = ({
   openDocuments,
   currentDocumentIndex,
   setOpenDocuments,
+  setEditingMetadata,
   setCurrentDocumentIndex,
   loading,
   savingError,
@@ -85,6 +88,11 @@ const TabsComponent: React.FC<TabsMenuBarProps> = ({
 
   const handleTabChange = (_: React.ChangeEvent<{}>, tabIndex: number) => {
     setCurrentDocumentIndex(tabIndex);
+  };
+
+  const toggleEditingMetadata = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
+    e.stopPropagation();
+    setEditingMetadata((prev) => !prev);
   };
 
   const handleCloseTab = (tabIndex: number) => (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
@@ -120,12 +128,23 @@ const TabsComponent: React.FC<TabsMenuBarProps> = ({
               label={(
                 <Box display="flex" alignItems="center">
                   <Typography className={classes.tabLabel}>{name}</Typography>
+                  <Fade in={i === currentDocumentIndex}>
+                    <Box
+                      display="flex"
+                      alignItems="center"
+                      onClick={i === currentDocumentIndex ? toggleEditingMetadata : undefined}
+                      className={classes.tabIconButton}
+                      ml={1}
+                    >
+                      <EditIcon fontSize="small" />
+                    </Box>
+                  </Fade>
                   <Box
                     display="flex"
                     alignItems="center"
                     onClick={handleCloseTab(i)}
                     className={classes.tabIconButton}
-                    ml={1}
+                    ml={0.5}
                   >
                     <CloseIcon />
                   </Box>
