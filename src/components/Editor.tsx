@@ -29,15 +29,6 @@ const useStyles = makeStyles((theme) => ({
   errorTypography: {
     color: '#dc3545',
   },
-  deleteButton: {
-    textTransform: 'none',
-    marginRight: theme.spacing(1),
-    backgroundColor: '#dc3545',
-    color: theme.palette.common.white,
-    '&:hover': {
-      backgroundColor: '#ab2936',
-    },
-  },
 }));
 
 type EditorProps = {

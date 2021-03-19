@@ -11,7 +11,10 @@ import VisibilityIcon from '@material-ui/icons/Visibility';
 import Fade from '@material-ui/core/Fade';
 import Typography from '@material-ui/core/Typography';
 import Menu, { MenuItem, SubMenu } from 'rc-menu';
-import { ClickAwayListener } from '@material-ui/core';
+import DeleteIcon from '@material-ui/icons/Delete';
+import ClickAwayListener from '@material-ui/core/ClickAwayListener';
+import IconButton from '@material-ui/core/IconButton';
+import Tooltip from '@material-ui/core/Tooltip';
 import './MenuBar.css';
 import examples from '../lib/examples';
 import { PROVDocument, PROVFileType } from '../lib/types';
@@ -87,6 +90,13 @@ const useStyles = makeStyles((theme) => ({
       cursor: 'pointer',
     },
   },
+  deleteIconButton: {
+    marginRight: theme.spacing(1),
+    padding: theme.spacing(0.5),
+    '& svg': {
+      color: theme.palette.common.white,
+    },
+  },
 }));
 
 type MenuBarProps = {
@@ -98,6 +108,7 @@ type MenuBarProps = {
   setLayout: React.Dispatch<React.SetStateAction<Layout>>;
   exportDocument: () => void;
   openDocument: (document: PROVDocument) => void;
+  deleteDocument: () => void;
   openFileUploadDialog: () => void;
   openCreateDocumentDialog: () => void;
   generateUniqueDocumentName: (name: string) => string;
@@ -114,6 +125,7 @@ const MenuBar: React.FC<MenuBarProps> = ({
   setLayout,
   exportDocument,
   openDocument,
+  deleteDocument,
   openFileUploadDialog,
   openCreateDocumentDialog,
   generateUniqueDocumentName,
@@ -239,7 +251,15 @@ const MenuBar: React.FC<MenuBarProps> = ({
         </Popper>
       </Box>
       <Fade in={currentDocument !== undefined}>
-        <Box display="flex">
+        <Box display="flex" alignItems="center">
+          <Tooltip title="Delete Document">
+            <IconButton
+              className={classes.deleteIconButton}
+              onClick={deleteDocument}
+            >
+              <DeleteIcon />
+            </IconButton>
+          </Tooltip>
           <Box>
             {currentDocument && (
             <PROVFileTypeSelect

@@ -16,10 +16,11 @@ import UploadDocumentDialog from './components/Dialog/UploadDocumentDialog';
 import ExportDocumentDialog from './components/Dialog/ExportDocumentDialog';
 import { PROVDocument } from './lib/types';
 import LocalDocumentsContext, { getLocalStorageDocuments, setLocalStorageDocuments } from './components/context/LocalDocumentsContext';
-import NoCurrentDocument from './components/NoCurrentDocument';
+import StartView from './components/StartView';
 import { translateSerializedToFile } from './lib/openProvenanceAPI';
 import Tabs, { TABS_HEIGHT } from './components/Tabs';
 import CreateDocumentDialog from './components/Dialog/CreateDocumentDialog';
+import DeleteDocumentDialog from './components/Dialog/DeleteDocumentDialog';
 
 // Global Constants
 export const MIN_CODE_WIDTH = 320;
@@ -78,6 +79,7 @@ const App = () => {
   const [currentDocumentIndex, setCurrentDocumentIndex] = useState<number>(-1);
   const [editingMetadata, setEditingMetadata] = useState<boolean>(false);
 
+  const [confirmDeleteDocument, setConfirmDeleteDocument] = useState<PROVDocument>();
   const [createDocumentDialogOpen, setCreateDocumentDialogOpen] = useState<boolean>(false);
   const [fileUploadDialogOpen, setFileUploadDialogOpen] = useState<boolean>(false);
   const [documentExportDialogOpen, setDocumentExportDialogOpen] = useState<boolean>(false);
@@ -281,7 +283,7 @@ const App = () => {
   };
 
   const handleVisualiserChange = (index: number) => (serialized: object) => {
-    const { name, type } = openDocuments[index];
+    const { type } = openDocuments[index];
     setOpenDocuments((documents) => [
       ...documents.slice(0, index),
       { ...openDocuments[index], serialized },
@@ -300,6 +302,13 @@ const App = () => {
       ]);
       setLocalDocument(updatedDocument);
     });
+  };
+
+  const handleDelete = (document: PROVDocument) => {
+    const updatedOpenDocuments = openDocuments.filter(({ name }) => name !== document.name);
+    if (updatedOpenDocuments.length === 0) setCurrentDocumentIndex(-1);
+    setOpenDocuments(updatedOpenDocuments);
+    setLocalDocuments((prev) => prev.filter(({ name }) => name !== document.name));
   };
 
   const documentNameIsUnique = (documentName: string) => localDocuments
@@ -330,6 +339,12 @@ const App = () => {
         documentNameIsUnique={documentNameIsUnique}
         generateUniqueDocumentName={generateUniqueDocumentName}
       />
+      <DeleteDocumentDialog
+        open={confirmDeleteDocument !== undefined}
+        document={confirmDeleteDocument}
+        onClose={() => setConfirmDeleteDocument(undefined)}
+        onDelete={handleDelete}
+      />
       {currentDocument && (
         <ExportDocumentDialog
           open={documentExportDialogOpen}
@@ -347,12 +362,15 @@ const App = () => {
         setErrorMessage={setErrorMessage}
         openDocuments={openDocuments}
         openDocument={openDocument}
+        deleteDocument={() => {
+          if (currentDocument) setConfirmDeleteDocument(currentDocument);
+        }}
         openFileUploadDialog={() => setFileUploadDialogOpen(true)}
         openCreateDocumentDialog={() => setCreateDocumentDialogOpen(true)}
         exportDocument={() => setDocumentExportDialogOpen(true)}
         generateUniqueDocumentName={generateUniqueDocumentName}
       />
-      {!currentDocument && <NoCurrentDocument />}
+      {!currentDocument && <StartView deleteDocument={setConfirmDeleteDocument} />}
       {currentDocument && (
         <>
           <Tabs

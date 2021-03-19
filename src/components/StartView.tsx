@@ -9,6 +9,7 @@ import CloseIcon from '@material-ui/icons/Close';
 import CardHeader from '@material-ui/core/CardHeader';
 import slugify from 'slugify';
 import LocalDocumentsContext from './context/LocalDocumentsContext';
+import { PROVDocument } from '../lib/types';
 
 const useStyles = makeStyles((theme) => ({
   cardHeader: {
@@ -16,22 +17,16 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-type NoCurrentDocumentProps = {
+type StartViewProps = {
+  deleteDocument: (document: PROVDocument) => void;
 }
 
-const NoCurrentDocument: React.FC<NoCurrentDocumentProps> = () => {
+const StartView: React.FC<StartViewProps> = ({ deleteDocument }) => {
   const classes = useStyles();
-  const { localDocuments, setLocalDocuments } = useContext(LocalDocumentsContext);
+  const { localDocuments } = useContext(LocalDocumentsContext);
   const recent = localDocuments
     .sort((a, b) => a.updatedAt.getTime() - b.updatedAt.getTime())
     .slice(0, 3);
-
-  const handleClose = (documentName: string) => (
-    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
-  ) => {
-    e.preventDefault();
-    setLocalDocuments(localDocuments.filter(({ name }) => name !== documentName));
-  };
 
   return (
     <Box p={10} flexGrow={1} display="flex" flexDirection="column" justifyContent="center" alignItems="center">
@@ -46,7 +41,11 @@ const NoCurrentDocument: React.FC<NoCurrentDocumentProps> = () => {
                   className={classes.cardHeader}
                   subheader={document.updatedAt.toLocaleDateString()}
                   action={(
-                    <IconButton onClick={handleClose(document.name)}>
+                    <IconButton onClick={(e) => {
+                      e.preventDefault();
+                      deleteDocument(document);
+                    }}
+                    >
                       <CloseIcon />
                     </IconButton>
                   )}
@@ -62,4 +61,4 @@ const NoCurrentDocument: React.FC<NoCurrentDocumentProps> = () => {
   );
 };
 
-export default NoCurrentDocument;
+export default StartView;
