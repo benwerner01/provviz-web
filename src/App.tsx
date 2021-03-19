@@ -81,7 +81,7 @@ const App = () => {
 
   const [confirmDeleteDocument, setConfirmDeleteDocument] = useState<PROVDocument>();
   const [createDocumentDialogOpen, setCreateDocumentDialogOpen] = useState<boolean>(false);
-  const [fileUploadDialogOpen, setFileUploadDialogOpen] = useState<boolean>(false);
+  const [uploadDocumentDialogOpen, setUploadDocumentDialogOpen] = useState<boolean>(false);
   const [documentExportDialogOpen, setDocumentExportDialogOpen] = useState<boolean>(false);
 
   const [loading, setLoading] = useState<boolean>(false);
@@ -326,8 +326,8 @@ const App = () => {
       value={{ localDocuments, setLocalDocuments, setLocalDocument }}
     >
       <UploadDocumentDialog
-        open={fileUploadDialogOpen}
-        onClose={() => setFileUploadDialogOpen(false)}
+        open={uploadDocumentDialogOpen}
+        onClose={() => setUploadDocumentDialogOpen(false)}
         openDocument={openDocument}
         documentNameIsUnique={documentNameIsUnique}
         generateUniqueDocumentName={generateUniqueDocumentName}
@@ -365,13 +365,12 @@ const App = () => {
         deleteDocument={() => {
           if (currentDocument) setConfirmDeleteDocument(currentDocument);
         }}
-        openFileUploadDialog={() => setFileUploadDialogOpen(true)}
+        openFileUploadDialog={() => setUploadDocumentDialogOpen(true)}
         openCreateDocumentDialog={() => setCreateDocumentDialogOpen(true)}
         exportDocument={() => setDocumentExportDialogOpen(true)}
         generateUniqueDocumentName={generateUniqueDocumentName}
       />
-      {!currentDocument && <StartView deleteDocument={setConfirmDeleteDocument} />}
-      {currentDocument && (
+      {currentDocument ? (
         <>
           <Tabs
             loading={loading}
@@ -455,6 +454,14 @@ const App = () => {
             )}
           </div>
         </>
+      ) : (
+        <StartView
+          deleteDocument={setConfirmDeleteDocument}
+          openUploadDocumentDialog={() => setUploadDocumentDialogOpen(true)}
+          openCreateDocumentDialog={() => setCreateDocumentDialogOpen(true)}
+          openDocument={openDocument}
+          generateUniqueDocumentName={generateUniqueDocumentName}
+        />
       )}
     </LocalDocumentsContext.Provider>
   );
