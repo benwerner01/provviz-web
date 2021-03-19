@@ -1,3 +1,4 @@
+import { tbdIsVisualisationSettings } from 'provviz';
 import React from 'react';
 import { PROVDocument } from '../../lib/types';
 
@@ -18,7 +19,14 @@ export const getLocalStorageDocuments = () => {
     return stringifiedLocalDocuments
       ? JSON.parse(stringifiedLocalDocuments)
         .filter(tbdIsLocalPROVDocument)
-        .map((d: LocalPROVDocument) => ({ ...d, updatedAt: new Date(d.updatedAt) }))
+        .map(({ updatedAt, visualisationSettings, ...localPROVDocument }: LocalPROVDocument) => ({
+          ...localPROVDocument,
+          updatedAt: new Date(updatedAt),
+          visualisationSettings: (
+            visualisationSettings
+            && tbdIsVisualisationSettings(visualisationSettings)
+          ) ? visualisationSettings : undefined,
+        }))
       : [];
   } catch {
     return [];
