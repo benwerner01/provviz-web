@@ -99,10 +99,13 @@ const TabsComponent: React.FC<TabsMenuBarProps> = ({
     e.stopPropagation();
     const updatedOpenDocuments = [
       ...openDocuments.slice(0, tabIndex),
-      ...openDocuments.slice(tabIndex + 1, openDocuments.length),
+      ...openDocuments.slice(tabIndex + 1),
     ];
-    if (updatedOpenDocuments.length === 0) setCurrentDocumentIndex(-1);
-    else if (tabIndex > (updatedOpenDocuments.length - 1)) setCurrentDocumentIndex(tabIndex - 1);
+    if (updatedOpenDocuments.length === 0) {
+      setCurrentDocumentIndex(-1);
+    } else if (currentDocumentIndex > (updatedOpenDocuments.length - 1)) {
+      setCurrentDocumentIndex(currentDocumentIndex - 1);
+    }
     setOpenDocuments(updatedOpenDocuments);
   };
 
