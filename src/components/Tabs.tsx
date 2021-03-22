@@ -30,9 +30,12 @@ const useStyles = makeStyles((theme) => ({
   tabRoot: {
     minHeight: TABS_HEIGHT,
     height: TABS_HEIGHT,
-    backgroundColor: theme.palette.common.white,
     minWidth: 'unset',
     textTransform: 'none',
+    backgroundColor: 'transparent',
+    '&.selected': {
+      backgroundColor: theme.palette.common.white,
+    },
   },
   tabLabel: {
     maxWidth: 200,
@@ -127,7 +130,7 @@ const TabsComponent: React.FC<TabsMenuBarProps> = ({
           {openDocuments.map(({ name }, i) => (
             <Tab
               key={name}
-              classes={{ root: classes.tabRoot }}
+              classes={{ root: [classes.tabRoot, i === currentDocumentIndex ? 'selected' : []].flat().join(' ') }}
               label={(
                 <Box display="flex" alignItems="center">
                   <Typography className={classes.tabLabel}>{name}</Typography>

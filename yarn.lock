@@ -2420,9 +2420,9 @@ ajv@^6.1.0, ajv@^6.10.0, ajv@^6.10.2, ajv@^6.12.3, ajv@^6.12.4, ajv@^6.12.5:
     uri-js "^4.2.2"
 
 ajv@^7.0.0, ajv@^7.1.1:
-  version "7.2.1"
-  resolved "https://registry.yarnpkg.com/ajv/-/ajv-7.2.1.tgz#a5ac226171912447683524fa2f1248fcf8bac83d"
-  integrity sha512-+nu0HDv7kNSOua9apAVc979qd932rrZeb3WOvoiD31A/p1mIE5/9bN2027pE2rOPYEdS3UHzsvof4hY+lM9/WQ==
+  version "7.2.3"
+  resolved "https://registry.yarnpkg.com/ajv/-/ajv-7.2.3.tgz#ca78d1cf458d7d36d1c3fa0794dd143406db5772"
+  integrity sha512-idv5WZvKVXDqKralOImQgPM9v6WOdLNa0IY3B3doOjw/YxRGT8I+allIJ6kd7Uaj+SF1xZUSU+nPM5aDNBVtnw==
   dependencies:
     fast-deep-equal "^3.1.1"
     json-schema-traverse "^1.0.0"
@@ -9549,9 +9549,9 @@ prop-types@^15.5.10, prop-types@^15.5.9, prop-types@^15.6.1, prop-types@^15.6.2,
     react-is "^16.8.1"
 
 provviz@^1.0.0:
-  version "1.28.3"
-  resolved "https://registry.yarnpkg.com/provviz/-/provviz-1.28.3.tgz#a06dc2c5f2e4bc56c0cac186e8e03a4de0607b74"
-  integrity sha512-IYDf4zqnTwHjF4CQV5RXj+PYbpjlQcur2OJZI5S5L1D/s4Qm60SuEg9Lw0+BYPtkb7Lw5IaRaFZB6VfPVFRa/w==
+  version "1.28.4"
+  resolved "https://registry.yarnpkg.com/provviz/-/provviz-1.28.4.tgz#8e2df67ce2d6313db695e22b0218df4a06c8ace6"
+  integrity sha512-ktjsYc/GGdJAmRTtIL1Ux9/dUeLm/zhsa8+8PHTZGlcITKWHjC605zok/8H3iZTFqK1V/UAAKnclNKDH7ZQjFA==
   dependencies:
     "@hpcc-js/wasm" "0.3.13"
     "@material-ui/core" "^4.11.0"
