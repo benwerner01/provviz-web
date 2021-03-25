@@ -272,7 +272,6 @@ const App = () => {
   const handleDocumentVisualisationSettingsChange = (index: number) => (
     visualisationSettings: VisualisationSettings,
   ) => {
-    const { name } = openDocuments[index];
     const updatedDocument: PROVDocument = { ...openDocuments[index], visualisationSettings };
     setOpenDocuments((documents) => [
       ...documents.slice(0, index),
