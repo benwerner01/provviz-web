@@ -5,12 +5,12 @@ import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
 import Box from '@material-ui/core/Box';
-import Collapse from '@material-ui/core/Collapse';
-import { TextField, Typography } from '@material-ui/core';
 import {
   EMPTY_SERIALIZED, EMPTY_PROV_FILE_CONTENT, PROVDocument, PROVFileType,
 } from '../../lib/types';
 import PROVFileTypeSelect from '../Select/PROVFileTypeSelect';
+import DocumentNameTextField from '../TextField/DocumentNameTextField';
+import useDocumentNameTextField from '../TextField/useDocumentNameTextField';
 
 const useStyles = makeStyles((theme) => ({
   dialogPaper: {
@@ -56,31 +56,28 @@ const ExportDocumentDialog: React.FC<ExportDocumentDialogProps> = ({
 }) => {
   const classes = useStyles();
 
-  const [name, setName] = useState<string>('');
+  const { documentName, setDocumentName, documentNameIsValid } = useDocumentNameTextField('', documentNameIsUnique);
+
   const [type, setType] = useState<PROVFileType>('PROV-N');
 
   useLayoutEffect(() => {
-    if (open) setName(generateUniqueDocumentName('My PROV Document'));
+    if (open) setDocumentName(generateUniqueDocumentName('My PROV Document'));
   }, [open]);
 
   const handleCancel = () => {
     onClose();
   };
 
-  const isUnique = documentNameIsUnique(name);
-
-  const validName = name !== '' && isUnique;
-
   const handleCreate = () => {
-    if (validName) {
+    if (documentNameIsValid) {
       openDocument({
-        name,
+        name: documentName,
         updatedAt: new Date(),
         type,
         serialized: EMPTY_SERIALIZED,
         fileContent: EMPTY_PROV_FILE_CONTENT[type],
       });
-      setName(generateUniqueDocumentName('My PROV Document'));
+      setDocumentName(generateUniqueDocumentName('My PROV Document'));
       onClose();
     }
   };
@@ -102,7 +99,10 @@ const ExportDocumentDialog: React.FC<ExportDocumentDialogProps> = ({
             flexDirection="column"
             justifyContent="space-between"
           >
-            <TextField
+            <DocumentNameTextField
+              name={documentName}
+              documentNameIsUnique={documentNameIsUnique}
+              onChange={setDocumentName}
               classes={{
                 root: classes.nameTextFieldRoot,
               }}
@@ -116,28 +116,9 @@ const ExportDocumentDialog: React.FC<ExportDocumentDialogProps> = ({
                   input: classes.nameTextFieldInput,
                 },
               }}
-              label="Document Name"
-              type="text"
               variant="outlined"
               style={{ width: '100%' }}
-              value={name}
-              onChange={({ target }) => setName(target.value)}
-              error={!validName}
             />
-            <Box mb={1}>
-              <Collapse in={!validName}>
-                {!isUnique && (
-                <Typography className={classes.errorTypography} gutterBottom>
-                  Please enter a unique Document Name
-                </Typography>
-                )}
-                {name === '' && (
-                <Typography className={classes.errorTypography} gutterBottom>
-                  Please enter a Document Name
-                </Typography>
-                )}
-              </Collapse>
-            </Box>
             <PROVFileTypeSelect
               label="Document Type"
               width="100%"
@@ -152,7 +133,7 @@ const ExportDocumentDialog: React.FC<ExportDocumentDialogProps> = ({
                 Cancel
               </Button>
               <Button
-                disabled={!validName}
+                disabled={!documentNameIsValid}
                 variant="outlined"
                 color="primary"
                 onClick={handleCreate}

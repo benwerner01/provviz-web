@@ -2,12 +2,9 @@ import React, {
   useCallback, useContext, useEffect, useLayoutEffect, useState,
 } from 'react';
 import Box from '@material-ui/core/Box';
-import Typography from '@material-ui/core/Typography';
 import Collapse from '@material-ui/core/Collapse';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
-import TextField from '@material-ui/core/TextField';
-import Button from '@material-ui/core/Button';
 import { makeStyles } from '@material-ui/core/styles';
 import MonacoEditor, { EditorWillMount, monaco } from 'react-monaco-editor';
 import debounce from 'lodash.debounce';
@@ -16,6 +13,8 @@ import { PROVDocument, PROVFileType } from '../lib/types';
 import CUSTOM_MONACO_LANGAUGES from '../lib/customMonacoLanguages';
 import { translateToPROVJSON } from '../lib/openProvenanceAPI';
 import LocalDocumentsContext from './context/LocalDocumentsContext';
+import DocumentNameTextField from './TextField/DocumentNameTextField';
+import useDocumentNameTextField from './TextField/useDocumentNameTextField';
 
 const METADATA_HEIGHT = 0;
 
@@ -61,7 +60,16 @@ const Editor: React.FC<EditorProps> = ({
   const { localDocuments } = useContext(LocalDocumentsContext);
   const classes = useStyles();
 
-  const [documentName, setDocumentName] = useState<string>(currentDocument.name);
+  const documentNameIsUnique = (potentialName: string) => (
+    localDocuments.find(({ name }) => name === potentialName) === undefined
+    || currentDocument.name === potentialName
+  );
+
+  const {
+    documentName,
+    setDocumentName,
+    documentNameIsValid,
+  } = useDocumentNameTextField(currentDocument.name, documentNameIsUnique);
   const [editor, setEditor] = useState<monaco.editor.IStandaloneCodeEditor | undefined>();
   const [prevDocumentName, setPrevDocumentName] = useState<string>(currentDocument.name);
   const [viewStates, setViewStates] = useState<Map<string, monaco.editor.ICodeEditorViewState>>(
@@ -94,15 +102,11 @@ const Editor: React.FC<EditorProps> = ({
     onChange({ ...currentDocument, name, updatedAt: new Date() });
   }, 300), [currentDocument]);
 
-  const isUnique = localDocuments.find(({ name }) => name === documentName) === undefined;
-
-  const validDocumentName = documentName !== '' && (currentDocument.name === documentName || isUnique);
-
   useEffect(() => {
-    if (currentDocument.name !== documentName && validDocumentName) {
+    if (currentDocument.name !== documentName && documentNameIsValid) {
       debouncedUpdateDocumentName(documentName);
     }
-  }, [validDocumentName, documentName]);
+  }, [documentNameIsValid, documentName]);
 
   const debouncedUpdateDocumentValue = useCallback(debounce(async (updatedValue: string) => {
     setLoading(true);
@@ -146,28 +150,12 @@ const Editor: React.FC<EditorProps> = ({
       <Collapse in={editingMetadata}>
         <Box className={classes.metadataWrapper} p={1} display="flex" justifyContent="space-between" alignItems="center">
           <Box style={{ position: 'relative' }} flexGrow={1}>
-            <TextField
-              label="Document Name"
-              type="text"
+            <DocumentNameTextField
+              name={documentName}
               style={{ width: 250 }}
-              value={documentName}
-              onChange={({ target }) => setDocumentName(target.value)}
-              error={!validDocumentName}
+              onChange={setDocumentName}
+              documentNameIsUnique={documentNameIsUnique}
             />
-            <Box mb={1}>
-              <Collapse in={!validDocumentName}>
-                {!isUnique && (
-                <Typography className={classes.errorTypography} gutterBottom>
-                  Please enter a unique Document Name
-                </Typography>
-                )}
-                {documentName === '' && (
-                <Typography className={classes.errorTypography} gutterBottom>
-                  Please enter a Document Name
-                </Typography>
-                )}
-              </Collapse>
-            </Box>
           </Box>
           <IconButton onClick={(() => setEditingMetadata(false))}><CloseIcon /></IconButton>
         </Box>
