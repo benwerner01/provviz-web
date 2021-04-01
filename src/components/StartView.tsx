@@ -16,6 +16,7 @@ import { PROVDocument } from '../lib/types';
 
 const useStyles = makeStyles((theme) => ({
   wrapper: {
+    maxHeight: 'calc(100% - 36px)',
     position: 'relative',
     padding: theme.spacing(10),
     boxSizing: 'border-box',
@@ -149,6 +150,28 @@ const StartView: React.FC<StartViewProps> = ({
           Create Document
         </Button>
       </Box>
+      <Grid container spacing={4}>
+        <Grid item xs={12} md={6}>
+          <Box display="flex" alignItems="center" flexDirection="column">
+            <Typography variant="h5">Need help?</Typography>
+            <Typography>
+              <a href="/user-guide.pdf" target="_blank" rel="noopener noreferrer">
+                Access the User-Guide
+              </a>
+            </Typography>
+          </Box>
+        </Grid>
+        <Grid item xs={12} md={6}>
+          <Box display="flex" alignItems="center" flexDirection="column">
+            <Typography variant="h5">Encountering a problem?</Typography>
+            <Typography>
+              <a href="https://github.com/benwerner01/provviz-web/issues" target="_blank" rel="noopener noreferrer">
+                File a GitHub issue
+              </a>
+            </Typography>
+          </Box>
+        </Grid>
+      </Grid>
     </Box>
   );
 };
