@@ -10,9 +10,9 @@ import CloseIcon from '@material-ui/icons/Close';
 import PublishIcon from '@material-ui/icons/Publish';
 import AddIcon from '@material-ui/icons/Add';
 import CardHeader from '@material-ui/core/CardHeader';
-import examples from '../lib/examples';
-import LocalDocumentsContext from './context/LocalDocumentsContext';
-import { PROVDocument } from '../lib/types';
+import examples from './lib/examples';
+import LocalDocumentsContext from './components/context/LocalDocumentsContext';
+import { PROVDocument } from './lib/types';
 
 const useStyles = makeStyles((theme) => ({
   wrapper: {

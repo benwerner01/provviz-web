@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import { StylesProvider, createGenerateClassName } from '@material-ui/core/styles';
 import { BrowserRouter, Switch, Route } from 'react-router-dom';
-import App from './App';
+import PROVDocumentEditor from './PROVDocumentEditor';
 
 const generateClassName = createGenerateClassName({
   productionPrefix: 'provviz-web', seed: 'provviz-web',
@@ -15,7 +15,7 @@ ReactDOM.render(
       <BrowserRouter>
         <Switch>
           <Route path={['/:slug', '/']}>
-            <App />
+            <PROVDocumentEditor />
           </Route>
         </Switch>
       </BrowserRouter>

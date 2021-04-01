@@ -21,7 +21,7 @@ import { PROVDocument, PROVFileType } from '../lib/types';
 import LocalDocumentsContext from './context/LocalDocumentsContext';
 import { translateSerializedToFile } from '../lib/openProvenanceAPI';
 import PROVFileTypeSelect from './Select/PROVFileTypeSelect';
-import { Dimension, MIN_CODE_WIDTH, MIN_VISUALISER_WIDTH } from '../App';
+import { Dimension, MIN_CODE_WIDTH, MIN_VISUALISER_WIDTH } from '../PROVDocumentEditor';
 
 export const MENU_BAR_HEIGHT = 36;
 

@@ -16,7 +16,7 @@ import UploadDocumentDialog from './components/Dialog/UploadDocumentDialog';
 import ExportDocumentDialog from './components/Dialog/ExportDocumentDialog';
 import { PROVDocument } from './lib/types';
 import LocalDocumentsContext, { getLocalStorageDocuments, setLocalStorageDocuments } from './components/context/LocalDocumentsContext';
-import StartView from './components/StartView';
+import StartView from './StartView';
 import { translateSerializedToFile } from './lib/openProvenanceAPI';
 import Tabs, { TABS_HEIGHT } from './components/Tabs';
 import CreateDocumentDialog from './components/Dialog/CreateDocumentDialog';
