@@ -1,7 +1,8 @@
 {
     "env": {
         "browser": true,
-        "es2021": true
+        "es2021": true,
+        "jest/globals": true
     },
     "extends": [
         "plugin:react/recommended",
@@ -17,7 +18,8 @@
     },
     "plugins": [
         "react",
-        "@typescript-eslint"
+        "@typescript-eslint",
+        "jest"
     ],
     "rules": {
         "no-nested-ternary":"off",
@@ -48,6 +50,23 @@
             "rules": {
                 "react/jsx-filename-extension": "off",
                 "import/extensions": "off"
+            }
+        },
+        {
+            "files": [
+              "*.test.ts",
+              "*.test.tsx"
+            ],
+            "env": {
+              "jest": true // now **/*.test.js files' env has both es6 *and* jest
+            },
+            "plugins": ["jest"],
+            "rules": {
+                "jest/no-disabled-tests": "warn",
+                "jest/no-focused-tests": "error",
+                "jest/no-identical-title": "error",
+                "jest/prefer-to-have-length": "warn",
+                "jest/valid-expect": "error"
             }
         }
     ],
