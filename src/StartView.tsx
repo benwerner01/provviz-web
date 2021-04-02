@@ -172,6 +172,18 @@ const StartView: React.FC<StartViewProps> = ({
           </Box>
         </Grid>
       </Grid>
+      <Typography>
+        By using
+        {' '}
+        <strong><i>ProvViz</i></strong>
+        , you agree to the
+        {' '}
+        <a href="https://openprovenance.org/ethics/provenance-web-services/" target="_blank" rel="noopener noreferrer">
+          <strong><i>Open Provenance Web Services</i></strong>
+          {' '}
+          terms of use
+        </a>
+      </Typography>
     </Box>
   );
 };
