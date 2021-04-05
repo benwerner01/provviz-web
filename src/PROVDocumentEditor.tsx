@@ -378,7 +378,6 @@ const App = () => {
             setOpenDocuments={setOpenDocuments}
             currentDocumentIndex={currentDocumentIndex}
             setCurrentDocumentIndex={setCurrentDocumentIndex}
-            setErrorMessage={setErrorMessage}
             setEditingMetadata={setEditingMetadata}
           />
           <Collapse in={errorMessage !== undefined}>

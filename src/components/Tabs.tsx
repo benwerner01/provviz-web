@@ -56,11 +56,18 @@ const useStyles = makeStyles((theme) => ({
       backgroundColor: theme.palette.grey[300],
     },
   },
-  errorIcon: {
-    color: '#dc3545',
+  errorWrapper: {
     '&:hover': {
       cursor: 'pointer',
     },
+  },
+  errorIcon: {
+    marginLeft: theme.spacing(1),
+    color: '#dc3545',
+  },
+  errorMessage: {
+    fontWeight: 800,
+    color: '#dc3545',
   },
   circularPraogress: {
     marginRight: theme.spacing(1),
@@ -73,7 +80,6 @@ type TabsMenuBarProps = {
   setEditingMetadata: React.Dispatch<React.SetStateAction<boolean>>;
   currentDocumentIndex: number;
   setCurrentDocumentIndex: (index: number) => void;
-  setErrorMessage: (errorMessage: ReactNode) => void;
   loading: boolean;
   savingError: boolean;
 }
@@ -162,8 +168,18 @@ const TabsComponent: React.FC<TabsMenuBarProps> = ({
         <Box display="flex" alignItems="center">
           <Fade in={savingError && !loading}>
             <Box display="flex">
-              <Tooltip arrow title={<Typography>Saving Error</Typography>}>
-                <WarningIcon className={classes.errorIcon} />
+              <Tooltip
+                arrow
+                title={(
+                  <Typography>
+                    Check the PROV Document is valid
+                  </Typography>
+                )}
+              >
+                <Box className={classes.errorWrapper} display="flex" alignItems="center">
+                  <Typography className={classes.errorMessage}>Could Not Save</Typography>
+                  <WarningIcon className={classes.errorIcon} />
+                </Box>
               </Tooltip>
             </Box>
           </Fade>
