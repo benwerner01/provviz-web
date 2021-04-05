@@ -10,6 +10,7 @@ import CloseIcon from '@material-ui/icons/Close';
 import PublishIcon from '@material-ui/icons/Publish';
 import AddIcon from '@material-ui/icons/Add';
 import CardHeader from '@material-ui/core/CardHeader';
+import CardContent from '@material-ui/core/CardContent';
 import examples from './lib/examples';
 import LocalDocumentsContext from './components/context/LocalDocumentsContext';
 import { PROVDocument } from './lib/types';
@@ -120,6 +121,11 @@ const StartView: React.FC<StartViewProps> = ({
                   title={document.name}
                   className={classes.cardHeader}
                 />
+                <CardContent style={{ paddingTop: 0 }}>
+                  <Typography variant="body2" color="textSecondary" component="p">
+                    {document.description}
+                  </Typography>
+                </CardContent>
               </Card>
             </Grid>
           ))}

@@ -1,8 +1,342 @@
+import React, { ReactNode } from 'react';
+import { defaultVisualisationSettings } from 'provviz';
 import { PROVDocument } from './types';
 
-const examples: Omit<PROVDocument, 'updatedAt'>[] = [
+type ExamplePROVDocument = Omit<PROVDocument, 'updatedAt'> & { description: ReactNode }
+
+const examples: ExamplePROVDocument[] = [
+  {
+    name: 'Newspaper Article',
+    description: (
+      <>
+        {'The example PROV document featured in the '}
+        <a href="https://www.w3.org/TR/prov-primer/#the-complete-example" onClick={(e) => e.stopPropagation()} target="_blank" rel="noopener noreferrer">
+          W3C PROV Model Primer
+        </a>
+      </>
+    ),
+    type: 'PROV-N',
+    fileContent: `document
+    prefix exc <http://s11.no/survey4/>
+    prefix exn <http://s11.no/survey4/>
+    prefix exb <http://s11.no/survey4/>
+    prefix exg <http://s11.no/survey4/>
+    prefix dcterms <http://purl.org/dc/terms/>
+    prefix foaf <http://xmlns.com/foaf/0.1/>
+
+    entity(exn:article, [dcterms:title="Crime rises in cities"])
+
+    entity(exg:dataset1)
+    entity(exc:regionList1)
+    entity(exc:composition1)
+    entity(exc:chart1)
+    
+    activity(exc:compile1)
+    activity(exc:compile2)
+    
+    activity(exc:compose1)
+    activity(exc:illustrate1)
+    
+    used(exc:compose1, exg:dataset1, -)
+    used(exc:compose1, exc:regionList1, -)
+    wasGeneratedBy(exc:composition1, exc:compose1, -)
+    
+    used(exc:illustrate1, exc:composition1, -)
+    wasGeneratedBy(exc:chart1, exc:illustrate1, -)
+    
+    wasAssociatedWith(exc:compose1, exc:derek, -)
+    wasAssociatedWith(exc:illustrate1, exc:derek, -)
+    
+    agent(exc:derek,
+        [prov:type='prov:Person', foaf:givenName="Derek", 
+        foaf:mbox="<mailto:derek@example.org>"])
+    
+    agent(exc:chartgen,
+        [prov:type='prov:Organization',
+        foaf:name="Chart Generators Inc"])
+    actedOnBehalfOf(exc:derek, exc:chartgen)
+    
+    wasAttributedTo(exc:chart1, exc:derek)
+    
+    used(exc:compose1, exg:dataset1, -, [prov:role='exc:dataToCompose'])
+    
+    used(exc:compose1, exc:regionList1, -, [prov:role='exc:regionsToAggregateBy'])
+    
+    wasAssociatedWith(exc:compose1, exc:derek, -, [prov:role='exc:analyst'])
+    wasGeneratedBy(exc:composition1, exc:compose1, -, [prov:role='exc:composedData'])
+    
+    entity(exg:dataset2)
+    wasDerivedFrom(exg:dataset2, exg:dataset1, [prov:type='prov:Revision'])
+    
+    wasDerivedFrom(exc:chart2, exg:dataset2)
+    
+    entity(exc:chart2)
+    wasDerivedFrom(exc:chart2, exc:chart1, [prov:type='prov:Revision'])
+    
+    agent(exg:edith, [prov:type='prov:Person'])
+    entity(exg:instructions)
+    
+    wasAssociatedWith(exg:correct1, exg:edith, exg:instructions)
+    wasGeneratedBy(exg:dataset2, exg:correct1, -)
+    
+    wasGeneratedBy(exc:chart1, exc:compile1,  2012-03-02T10:30:00)
+    wasGeneratedBy(exc:chart2, exc:compile2, 2012-04-01T15:21:00)
+    
+    activity(exg:correct1, 2012-03-31T09:21:00, 2012-04-01T15:21:00)
+    
+    entity(exb:quoteInBlogEntry-20130326, prov:value="Smaller cities have more crime than larger ones")
+    wasDerivedFrom(exb:quoteInBlogEntry-20130326, exn:article, [prov:type='prov:Quotation'])
+    
+    entity(exn:articleV1)
+    specializationOf(exn:articleV1, exn:article)
+    wasDerivedFrom(exb:articleV1, exb:dataset1)
+    
+    entity(exn:articleV2)
+    
+    specializationOf(exn:articleV2, exn:article)
+    alternateOf(exn:articleV2, exn:articleV1)
+    
+    endDocument
+    `,
+    serialized: {
+      wasGeneratedBy: {
+        '_:wGB121': {
+          'prov:entity': 'exc:composition1',
+          'prov:activity': 'exc:compose1',
+        },
+        '_:wGB123': {
+          'prov:entity': 'exc:composition1',
+          'prov:role': {
+            $: 'exc:composedData',
+            type: 'prov:QUALIFIED_NAME',
+          },
+          'prov:activity': 'exc:compose1',
+        },
+        '_:wGB122': {
+          'prov:entity': 'exc:chart1',
+          'prov:activity': 'exc:illustrate1',
+        },
+        '_:wGB125': {
+          'prov:time': '2012-03-02T10:30:00.000Z',
+          'prov:entity': 'exc:chart1',
+          'prov:activity': 'exc:compile1',
+        },
+        '_:wGB124': {
+          'prov:entity': 'exc:dataset2',
+          'prov:activity': 'exc:correct1',
+        },
+        '_:wGB126': {
+          'prov:time': '2012-04-01T15:21:00.000Z',
+          'prov:entity': 'exc:chart2',
+          'prov:activity': 'exc:compile2',
+        },
+      },
+      agent: {
+        'exc:derek': {
+          'prov:type': {
+            $: 'prov:Person',
+            type: 'prov:QUALIFIED_NAME',
+          },
+          'foaf:givenName': {
+            $: 'Derek',
+            type: 'xsd:string',
+          },
+          'foaf:mbox': {
+            $: '\u003cmailto:derek@example.org\u003e',
+            type: 'xsd:string',
+          },
+        },
+        'exc:edith': {
+          'prov:type': {
+            $: 'prov:Person',
+            type: 'prov:QUALIFIED_NAME',
+          },
+        },
+        'exc:chartgen': {
+          'foaf:name': {
+            $: 'Chart Generators Inc',
+            type: 'xsd:string',
+          },
+          'prov:type': {
+            $: 'prov:Organization',
+            type: 'prov:QUALIFIED_NAME',
+          },
+        },
+      },
+      activity: {
+        'exc:compose1': {},
+        'exc:correct1': {
+          'prov:startTime': '2012-03-31T09:21:00.000Z',
+          'prov:endTime': '2012-04-01T15:21:00.000Z',
+        },
+        'exc:compile2': {},
+        'exc:illustrate1': {},
+        'exc:compile1': {},
+      },
+      actedOnBehalfOf: {
+        '_:aOBO21': {
+          'prov:responsible': 'exc:chartgen',
+          'prov:delegate': 'exc:derek',
+        },
+      },
+      alternateOf: {
+        '_:aO21': {
+          'prov:alternate2': 'exc:articleV2',
+          'prov:alternate1': 'exc:articleV1',
+        },
+      },
+      prefix: {
+        exb: 'http://s11.no/survey4/',
+        foaf: 'http://xmlns.com/foaf/0.1/',
+        exn: 'http://s11.no/survey4/',
+        prov: 'http://www.w3.org/ns/prov#',
+        xsd: 'http://www.w3.org/2001/XMLSchema#',
+        dcterms: 'http://purl.org/dc/terms/',
+        exg: 'http://s11.no/survey4/',
+        exc: 'http://s11.no/survey4/',
+      },
+      wasAssociatedWith: {
+        '_:wAW82': {
+          'prov:agent': 'exc:derek',
+          'prov:activity': 'exc:illustrate1',
+        },
+        '_:wAW83': {
+          'prov:agent': 'exc:derek',
+          'prov:role': {
+            $: 'exc:analyst',
+            type: 'prov:QUALIFIED_NAME',
+          },
+          'prov:activity': 'exc:compose1',
+        },
+        '_:wAW84': {
+          'prov:plan': 'exc:instructions',
+          'prov:agent': 'exc:edith',
+          'prov:activity': 'exc:correct1',
+        },
+        '_:wAW81': {
+          'prov:agent': 'exc:derek',
+          'prov:activity': 'exc:compose1',
+        },
+      },
+      wasDerivedFrom: {
+        '_:wDF81': {
+          'prov:type': {
+            $: 'prov:Revision',
+            type: 'prov:QUALIFIED_NAME',
+          },
+          'prov:generatedEntity': 'exc:dataset2',
+          'prov:usedEntity': 'exc:dataset1',
+        },
+        '_:wDF83': {
+          'prov:type': {
+            $: 'prov:Revision',
+            type: 'prov:QUALIFIED_NAME',
+          },
+          'prov:generatedEntity': 'exc:chart2',
+          'prov:usedEntity': 'exc:chart1',
+        },
+        '_:wDF82': {
+          'prov:generatedEntity': 'exc:chart2',
+          'prov:usedEntity': 'exc:dataset2',
+        },
+        '_:wDF84': {
+          'prov:type': {
+            $: 'prov:Quotation',
+            type: 'prov:QUALIFIED_NAME',
+          },
+          'prov:generatedEntity': 'exc:quoteInBlogEntry-20130326',
+          'prov:usedEntity': 'exc:article',
+        },
+        '_:wDF85': {
+          'prov:generatedEntity': 'exc:articleV1',
+          'prov:usedEntity': 'exc:dataset1',
+        },
+      },
+      used: {
+        '_:u104': {
+          'prov:entity': 'exc:dataset1',
+          'prov:role': {
+            $: 'exc:dataToCompose',
+            type: 'prov:QUALIFIED_NAME',
+          },
+          'prov:activity': 'exc:compose1',
+        },
+        '_:u103': {
+          'prov:entity': 'exc:composition1',
+          'prov:activity': 'exc:illustrate1',
+        },
+        '_:u102': {
+          'prov:entity': 'exc:regionList1',
+          'prov:activity': 'exc:compose1',
+        },
+        '_:u101': {
+          'prov:entity': 'exc:dataset1',
+          'prov:activity': 'exc:compose1',
+        },
+        '_:u105': {
+          'prov:entity': 'exc:regionList1',
+          'prov:role': {
+            $: 'exc:regionsToAggregateBy',
+            type: 'prov:QUALIFIED_NAME',
+          },
+          'prov:activity': 'exc:compose1',
+        },
+      },
+      wasAttributedTo: {
+        '_:wAT21': {
+          'prov:entity': 'exc:chart1',
+          'prov:agent': 'exc:derek',
+        },
+      },
+      entity: {
+        'exc:instructions': {},
+        'exc:dataset1': {},
+        'exc:articleV1': {},
+        'exc:regionList1': {},
+        'exc:dataset2': {},
+        'exc:article': {
+          'dcterms:title': {
+            $: 'Crime rises in cities',
+            type: 'xsd:string',
+          },
+        },
+        'exc:quoteInBlogEntry-20130326': {
+          'prov:value': {
+            $: 'Smaller cities have more crime than larger ones',
+            type: 'xsd:string',
+          },
+        },
+        'exc:chart2': {},
+        'exc:composition1': {},
+        'exc:articleV2': {},
+        'exc:chart1': {},
+      },
+      specializationOf: {
+        '_:sO42': {
+          'prov:specificEntity': 'exc:articleV2',
+          'prov:generalEntity': 'exc:article',
+        },
+        '_:sO41': {
+          'prov:specificEntity': 'exc:articleV1',
+          'prov:generalEntity': 'exc:article',
+        },
+      },
+    },
+  },
   {
     name: 'Survey Results',
+    description: (
+      <>
+        {'The provenance of an example survey published to the '}
+        <a href="https://openprovenance.org/store/documents/1478" onClick={(e) => e.stopPropagation()} target="_blank" rel="noopener noreferrer">
+          Open Provenance ProvStore
+        </a>
+        {' by user '}
+        <a href="https://openprovenance.org/store/users/soilandreyes" onClick={(e) => e.stopPropagation()} target="_blank" rel="noopener noreferrer">
+          soilandreyes
+        </a>
+      </>
+    ),
     type: 'PROV-N',
     fileContent: `document
     prefix ex <http://s11.no/survey4/>
@@ -52,6 +386,23 @@ const examples: Omit<PROVDocument, 'updatedAt'>[] = [
   {
     name: 'PROVBook',
     type: 'PROV-N',
+    description: (
+      <>
+        {'The provenance of the '}
+        <a href="http://www.provbook.org/" onClick={(e) => e.stopPropagation()} target="_blank" rel="noopener noreferrer">
+          <i>Provenance: An Introduction to PROV</i>
+          {' book'}
+        </a>
+        {' published '}
+        <a href="http://www.provbook.org/provapi/documents/bk.provn" onClick={(e) => e.stopPropagation()} target="_blank" rel="noopener noreferrer">
+          here
+        </a>
+      </>
+    ),
+    visualisationSettings: {
+      ...defaultVisualisationSettings,
+      hideAllNodeAttributes: true,
+    },
     fileContent: `document
     prefix hendler <http://www.cs.rpi.edu/~hendler/>
     prefix dct <http://purl.org/dc/terms/>
