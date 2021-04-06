@@ -12,7 +12,7 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-type DocumentNameTextFieldProps = {
+export type DocumentNameTextFieldProps = {
   name: string,
   documentNameIsUnique: (name: string) => boolean;
   onChange: (name: string) => void;
