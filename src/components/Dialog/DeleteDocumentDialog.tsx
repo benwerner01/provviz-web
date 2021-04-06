@@ -34,7 +34,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-type DeleteDocumentDialogProps = {
+export type DeleteDocumentDialogProps = {
   open: boolean;
   document?: PROVDocument;
   onClose: () => void;

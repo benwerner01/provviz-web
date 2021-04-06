@@ -43,7 +43,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-type ExportDocumentDialogProps = {
+export type CreateDocumentDialogProps = {
   open: boolean;
   onClose: () => void;
   documentNameIsUnique: (name: string) => boolean
@@ -51,7 +51,7 @@ type ExportDocumentDialogProps = {
   openDocument: (document: PROVDocument) => void;
 }
 
-const ExportDocumentDialog: React.FC<ExportDocumentDialogProps> = ({
+const CreateDocumentDialog: React.FC<CreateDocumentDialogProps> = ({
   open, documentNameIsUnique, generateUniqueDocumentName, openDocument, onClose,
 }) => {
   const classes = useStyles();
@@ -148,4 +148,4 @@ const ExportDocumentDialog: React.FC<ExportDocumentDialogProps> = ({
   );
 };
 
-export default React.memo(ExportDocumentDialog);
+export default React.memo(CreateDocumentDialog);

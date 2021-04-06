@@ -51,7 +51,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-type UploadDocumentDialogProps = {
+export type UploadDocumentDialogProps = {
   open: boolean;
   onClose: () => void;
   openDocument: (document: PROVDocument) => void;

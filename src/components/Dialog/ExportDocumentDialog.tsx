@@ -48,7 +48,7 @@ const mapPROVFileTypeToFileExtension = (type: PROVFileType) => {
   return '.ttl';
 };
 
-type ExportDocumentDialogProps = {
+export type ExportDocumentDialogProps = {
   open: boolean;
   document: PROVDocument;
   onClose: () => void;
