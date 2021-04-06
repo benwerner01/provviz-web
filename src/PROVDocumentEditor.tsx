@@ -289,6 +289,7 @@ const PROVDocumentEditor = () => {
       ...documents.slice(index + 1, documents.length),
     ]);
     translateSerializedToFile(serialized, type).then((fileContent) => {
+      // eslint-disable-next-line no-console
       if (!fileContent) console.error('Could not translate visualiser serialisation: ', serialized);
       const updatedDocument: PROVDocument = {
         ...openDocuments[index],
