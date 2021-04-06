@@ -30,7 +30,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-type EditorProps = {
+export type EditorProps = {
   editingMetadata: boolean;
   currentDocument: PROVDocument;
   setEditingMetadata: (editingMetadata: boolean) => void;
