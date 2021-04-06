@@ -9620,9 +9620,9 @@ prop-types@^15.5.10, prop-types@^15.5.9, prop-types@^15.6.1, prop-types@^15.6.2,
     react-is "^16.8.1"
 
 provviz@^1.0.0:
-  version "1.37.0"
-  resolved "https://registry.yarnpkg.com/provviz/-/provviz-1.37.0.tgz#76177f861a902a19b076e870b72316c2324d736d"
-  integrity sha512-8m2hOHmCRuhSAc1e9f68iwRebAhM/XBvpjN4eLe0fR66giZTuGpiV9QITZx17Glr2flOcz6lG2mX3gW2lKHF7A==
+  version "1.38.2"
+  resolved "https://registry.yarnpkg.com/provviz/-/provviz-1.38.2.tgz#d83cfaf49dfd60e54b40150eaead2f2ab1a2bee8"
+  integrity sha512-LTeT/6VGiExbLwcYH9HV0ki8vBphH7Win94uzohY0KWCjmdY2gFSyjy0Yo3eO8I44u/ogZ8d+NPI34Aeu34T9Q==
   dependencies:
     "@date-io/date-fns" "1.x"
     "@hpcc-js/wasm" "0.3.13"

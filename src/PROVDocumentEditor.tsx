@@ -68,7 +68,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const App = () => {
+const PROVDocumentEditor = () => {
   const history = useHistory();
   const classes = useStyles();
   const contentWrapperRef = useRef<HTMLDivElement>(null);
@@ -466,4 +466,4 @@ const App = () => {
   );
 };
 
-export default App;
+export default PROVDocumentEditor;
