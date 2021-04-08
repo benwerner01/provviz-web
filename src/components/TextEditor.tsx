@@ -100,7 +100,7 @@ const TextEditor: React.FC<TextEditorProps> = ({
 
   const debouncedUpdateDocumentName = useCallback(debounce(async (name: string) => {
     onChange({ ...currentDocument, name, updatedAt: new Date() });
-  }, 300), [currentDocument]);
+  }, 1000), [currentDocument]);
 
   useEffect(() => {
     if (currentDocument.name !== documentName && documentNameIsValid) {
