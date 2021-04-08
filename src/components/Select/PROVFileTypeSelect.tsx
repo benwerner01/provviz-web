@@ -24,7 +24,7 @@ const useStyles = makeStyles((theme) => ({
   }),
 }));
 
-type PROVFileTypeSelectProps = {
+export type PROVFileTypeSelectProps = {
   label?: string;
   width?: string | number;
   value: PROVFileType;
