@@ -51,7 +51,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-type StartViewProps = {
+export type StartViewProps = {
   openUploadDocumentDialog: () => void;
   openCreateDocumentDialog: () => void;
   openDocument: (document: PROVDocument) => void;
