@@ -4447,9 +4447,9 @@ data-urls@^2.0.0:
     whatwg-url "^8.0.0"
 
 date-fns@^2.19.0:
-  version "2.19.0"
-  resolved "https://registry.yarnpkg.com/date-fns/-/date-fns-2.19.0.tgz#65193348635a28d5d916c43ec7ce6fbd145059e1"
-  integrity sha512-X3bf2iTPgCAQp9wvjOQytnf5vO5rESYRXlPIVcgSbtT5OTScPcsf9eZU+B/YIkKAtYr5WeCii58BgATrNitlWg==
+  version "2.20.0"
+  resolved "https://registry.yarnpkg.com/date-fns/-/date-fns-2.20.0.tgz#df00ba9177fbea22d88010b5844ecc91e9e03ceb"
+  integrity sha512-nmA7y6aDH5+fknfJ0G77HQzUSfTPpq4ifq+c9blP9d+X9zs3kNjxC+t3pcbBMGTp262a6PJB3RVjLlxIgoMI+Q==
 
 debug@2.6.9, debug@^2.2.0, debug@^2.3.3, debug@^2.6.0, debug@^2.6.9:
   version "2.6.9"
@@ -9620,9 +9620,9 @@ prop-types@^15.5.10, prop-types@^15.5.9, prop-types@^15.6.1, prop-types@^15.6.2,
     react-is "^16.8.1"
 
 provviz@^1.0.0:
-  version "1.38.6"
-  resolved "https://registry.yarnpkg.com/provviz/-/provviz-1.38.6.tgz#aff6ee9f8f06476c69452deebd87fc82278e26bd"
-  integrity sha512-bJpGTBgBi7i+HstmKcini4B+dkEIBS7SIyx3HlS++W9aJ0BDr2ispCuoEVhGCZymrF1FZNc/7YMYwapBUnQqnQ==
+  version "1.38.7"
+  resolved "https://registry.yarnpkg.com/provviz/-/provviz-1.38.7.tgz#b3a47ac1ab14273e937fc10fa811e2d3a6d8d7dc"
+  integrity sha512-fsalCNsA2spnbfOgyqNE7L6nC4Ak012I5+CZVle3i9uVZ5puL+APvcFvRL8jYKb1GZ33zL6UBUdaGHODlx3khg==
   dependencies:
     "@date-io/date-fns" "1.x"
     "@hpcc-js/wasm" "0.3.13"
