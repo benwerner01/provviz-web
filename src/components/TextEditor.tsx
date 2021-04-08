@@ -30,7 +30,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export type EditorProps = {
+export type TextEditorProps = {
   editingMetadata: boolean;
   currentDocument: PROVDocument;
   setEditingMetadata: (editingMetadata: boolean) => void;
@@ -47,7 +47,7 @@ const mapPROVFileTypeToMonacoLanguage = (type: PROVFileType) => {
   return type;
 };
 
-const Editor: React.FC<EditorProps> = ({
+const TextEditor: React.FC<TextEditorProps> = ({
   editingMetadata,
   width,
   height,
@@ -174,4 +174,4 @@ const Editor: React.FC<EditorProps> = ({
   );
 };
 
-export default Editor;
+export default TextEditor;

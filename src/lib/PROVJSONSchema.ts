@@ -1,3 +1,4 @@
+// Based on the W3C PROV-JSON Serialization JSON Schema (https://www.w3.org/Submission/2013/SUBM-prov-json-20130424/schema)
 export default {
   id: 'http://provenance.ecs.soton.ac.uk/prov-json/schema#',
   $schema: 'http://json-schema.org/draft-04/schema#',

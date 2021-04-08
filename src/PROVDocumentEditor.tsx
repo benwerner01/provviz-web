@@ -11,7 +11,7 @@ import CloseIcon from '@material-ui/icons/Close';
 import Collapse from '@material-ui/core/Collapse';
 import Typography from '@material-ui/core/Typography';
 import MenuBar, { Layout, MENU_BAR_HEIGHT } from './components/MenuBar';
-import Editor from './components/Editor';
+import TextEditor from './components/TextEditor';
 import UploadDocumentDialog from './components/Dialog/UploadDocumentDialog';
 import ExportDocumentDialog from './components/Dialog/ExportDocumentDialog';
 import { PROVDocument } from './lib/types';
@@ -402,7 +402,7 @@ const PROVDocumentEditor = () => {
             {contentWrapperDimension && offsetRatio && (
               <>
                 {layout.code && (
-                <Editor
+                <TextEditor
                   editingMetadata={editingMetadata}
                   setEditingMetadata={setEditingMetadata}
                   currentDocument={currentDocument}
