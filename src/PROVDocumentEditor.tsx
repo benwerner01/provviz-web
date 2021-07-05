@@ -291,17 +291,17 @@ const PROVDocumentEditor = () => {
     translateSerializedToFile(serialized, type).then((fileContent) => {
       // eslint-disable-next-line no-console
       if (!fileContent) console.error('Could not translate visualiser serialisation: ', serialized);
-      const updatedDocument: PROVDocument = {
+
+      setOpenDocuments((documents) => [
+        ...documents.slice(0, index),
+        { ...documents[index], fileContent: fileContent || openDocuments[index].fileContent },
+        ...documents.slice(index + 1, documents.length),
+      ]);
+      setLocalDocument({
         ...openDocuments[index],
         serialized,
         fileContent: fileContent || openDocuments[index].fileContent,
-      };
-      setOpenDocuments((documents) => [
-        ...documents.slice(0, index),
-        updatedDocument,
-        ...documents.slice(index + 1, documents.length),
-      ]);
-      setLocalDocument(updatedDocument);
+      });
     });
   };
 
