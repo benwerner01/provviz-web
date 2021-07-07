@@ -6,7 +6,17 @@ The *ProvViz Application* is an intuitive PROV editor and visualiser, hosted at 
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-## Available Scripts
+## Future Work 👷‍♂️
+
+### *PROV-N* Tokenising the Text-Editor 🔨
+The text-editor component of the ProvViz application currently only implements syntax highlighting for the *JSON* and *RDF* PROV formats, where existing tokenisation rules could be taken from the [monaco-languages GitHub
+repository](https://github.com/microsoft/monaco-languages). Additional tokenisation rules for the prominent PROV format *PROV-N*
+would serve as a “quality-of-life” improvement for users of the application.
+
+### Integrate Cloud Storage Providers 🔨
+Users could link a cloud storage provider such as [DropBox](https://dropbox.com) or [Google Drive](https://drive.google.com) to load and save modified PROV documents directly. This would better integrate ProvViz into a user’s personal file-storage system, without the need for explicitly uploading and downloading PROV documents in the browser, which would provide a more seamless user experience.
+
+## Available Scripts 💻
 
 In the project directory, you can run:
 
