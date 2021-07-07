@@ -121,7 +121,7 @@ const TextEditor: React.FC<TextEditorProps> = ({
     } else setSavingError(true);
 
     setLoading(false);
-  }, 300), [currentDocument]);
+  }, 1000), [currentDocument]);
 
   const handleMonacoChange = (newValue: string) => {
     debouncedUpdateDocumentValue(newValue);
